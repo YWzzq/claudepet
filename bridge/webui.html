@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgentPet 配置台</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px 16px 48px; background: #12141A; color: #E5E7EB;
+    font-family: -apple-system, "Hiragino Sans GB", "PingFang SC", sans-serif;
+  }
+  h1 { font-size: 20px; margin: 0 0 4px; text-align: center; }
+  .sub { text-align: center; font-size: 12px; color: #9CA3AF; margin-bottom: 20px; }
+  .wrap { display: flex; gap: 20px; max-width: 1000px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+  .panel {
+    background: #1B1F27; border: 1px solid #2A3040; border-radius: 14px;
+    padding: 18px; width: 420px; max-width: 96vw;
+  }
+  .panel h2 { font-size: 15px; margin: 0 0 12px; color: #93C5FD; }
+  .conn { display: flex; gap: 8px; margin-bottom: 14px; }
+  .conn input {
+    flex: 1; background: #12141A; border: 1px solid #374151; color: #E5E7EB;
+    border-radius: 6px; padding: 7px 10px; font-size: 13px;
+  }
+  button {
+    background: #2563EB; color: #fff; border: none; border-radius: 7px;
+    padding: 8px 14px; font-size: 13px; cursor: pointer;
+  }
+  button:hover { filter: brightness(1.15); }
+  button.gray { background: #374151; }
+  button.red { background: #B91C1C; }
+  button.green { background: #15803D; }
+  .states { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .states .chip {
+    padding: 6px 12px; border-radius: 16px; font-size: 13px; cursor: pointer;
+    background: #262C38; border: 1.5px solid transparent; color: #E5E7EB;
+  }
+  .states .chip.sel { border-color: #fff; }
+  .row { display: flex; align-items: center; gap: 12px; margin: 10px 0; font-size: 14px; }
+  .row label { width: 64px; color: #9CA3AF; }
+  input[type=color] { width: 52px; height: 34px; border: none; background: none; cursor: pointer; }
+  input[type=range] { flex: 1; }
+  select, input[type=text] {
+    background: #12141A; border: 1px solid #374151; color: #E5E7EB;
+    border-radius: 6px; padding: 6px 10px; font-size: 13px;
+  }
+  .ledbox { display: flex; align-items: center; gap: 18px; margin: 14px 0; }
+  .led {
+    width: 54px; height: 54px; border-radius: 50%;
+    background: #333; box-shadow: 0 0 0 rgba(0,0,0,0);
+  }
+  .ledhint { font-size: 12px; color: #6B7280; }
+  .btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  textarea {
+    width: 100%; height: 260px; background: #12141A; color: #E5E7EB;
+    border: 1px solid #374151; border-radius: 8px; padding: 10px;
+    font-family: ui-monospace, Menlo, monospace; font-size: 12px; resize: vertical;
+  }
+  .msg { font-size: 12px; margin-top: 8px; min-height: 16px; }
+  .msg.ok { color: #4ADE80; } .msg.err { color: #F87171; }
+</style>
+</head>
+<body>
+  <h1>AgentPet 配置台</h1>
+  <div class="sub">左边管板子上的状态配方（写进 NVS）· 右边管事件绑定规则（mapping.json 热加载）</div>
+  <div class="wrap">
+    <!-- ══ 左：配方管理 ══ -->
+    <div class="panel">
+      <h2>状态配方（板子）</h2>
+      <div class="conn">
+        <input id="ip" placeholder="板子 IP，如 192.168.1.188">
+        <button onclick="connectBoard()">连接</button>
+      </div>
+      <div class="states" id="stateChips"></div>
+      <div class="row"><label>状态名</label><input type="text" id="f_name" placeholder="1~12位字母数字_"></div>
+      <div class="row"><label>颜色</label><input type="color" id="f_color" value="#3BB8E8"></div>
+      <div class="row"><label>灯效</label>
+        <select id="f_mode">
+          <option value="steady">steady 常亮</option>
+          <option value="breath">breath 呼吸</option>
+          <option value="blink">blink 闪烁</option>
+          <option value="double">double 双闪</option>
+        </select>
+      </div>
+      <div class="row"><label>周期</label>
+        <input type="range" id="f_period" min="50" max="5000" step="50" value="800" oninput="document.getElementById('f_pv').textContent=value+'ms'">
+        <span id="f_pv" style="width:56px">800ms</span>
+      </div>
+      <div class="ledbox">
+        <div class="led" id="ledPreview"></div>
+        <div class="ledhint">LED 实时预览<br>（保存前即可看效果）</div>
+      </div>
+      <div class="btns">
+        <button class="gray" onclick="newRecipe()">新增</button>
+        <button onclick="saveRecipe()">保存到板子</button>
+        <button class="green" onclick="testState()">试灯</button>
+        <button class="gray" onclick="toIdle()">回 idle</button>
+        <button class="red" onclick="delState()">删除</button>
+      </div>
+      <div class="msg" id="msg1"></div>
+    </div>
+
+    <!-- ══ 右：绑定关系 ══ -->
+    <div class="panel">
+      <h2>事件绑定规则（mapping.json）</h2>
+      <div style="font-size:12px;color:#9CA3AF;margin-bottom:10px;line-height:1.6">
+        规则字段：source（claude/codex）· event 或 type（事件名）· tool（支持通配符，如 Bash*）·
+        on_error（仅出错时）· state（目标状态）· priority（优先级覆盖）。数组顺序即匹配顺序。
+      </div>
+      <textarea id="rules" spellcheck="false"></textarea>
+      <div class="btns">
+        <button class="gray" onclick="loadRules()">重新载入</button>
+        <button class="green" onclick="saveRules()">保存并热加载</button>
+      </div>
+      <div class="msg" id="msg2"></div>
+    </div>
+  </div>
+
+  <!-- ══ 屏幕预览（V1.1 配方）══ -->
+  <div class="panel" style="max-width:1000px;margin:0 auto;width:1000px">
+    <h2>屏幕预览（240×240 · 配方实时渲染 · 屏幕到货前先看效果）</h2>
+    <div style="display:flex;gap:24px;flex-wrap:wrap">
+      <canvas id="screen" width="480" height="480" style="width:384px;height:384px;border-radius:10px;border:1px solid #2A3040"></canvas>
+      <div style="flex:1;min-width:220px">
+        <div class="row"><label>背景</label><input type="color" id="s_bg" value="#000000"></div>
+        <div class="row"><label>五官色</label><input type="color" id="s_fg" value="#9D8FFF"></div>
+        <div class="row"><label>眼睛</label>
+          <select id="s_eye">
+            <option value="open">open 圆眼</option>
+            <option value="wide">wide 瞪大</option>
+            <option value="sleep">sleep 闭眼</option>
+            <option value="happy">happy 笑眼</option>
+            <option value="x">x X 眼</option>
+          </select>
+        </div>
+        <div class="row"><label>眼神</label>
+          <select id="s_anim">
+            <option value="still">still 不动</option>
+            <option value="look">look 飘移</option>
+            <option value="scan">scan 扫读</option>
+            <option value="down">down 向下</option>
+          </select>
+        </div>
+        <div class="row"><label>嘴</label>
+          <select id="s_mouth">
+            <option value="none">none 无</option>
+            <option value="flat">flat 平嘴</option>
+            <option value="smile">smile 微笑</option>
+            <option value="o">o 圆嘴</option>
+            <option value="wave">wave 波浪</option>
+            <option value="prompt">prompt &gt;_</option>
+            <option value="question">question ?</option>
+          </select>
+        </div>
+        <div class="row"><label>附加</label>
+          <select id="s_extra">
+            <option value="none">none 无</option>
+            <option value="dots">dots ...</option>
+            <option value="z">z</option>
+          </select>
+        </div>
+        <div class="row"><label>抖动</label><input type="checkbox" id="s_shake"></div>
+        <div style="font-size:12px;color:#6B7280;margin-top:10px;line-height:1.6">
+          这些 screen 参数会随配方一起保存进板子。当前固件暂不渲染到真屏，
+          屏幕到货后 V1.1 固件直接按此配方点亮——预览即最终效果。
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+'use strict';
+let boardIp = localStorage.getItem('ap_ip') || '';
+let states = {};        // name -> recipe
+let selected = null;
+let isNew = false;
+
+const $ = id => document.getElementById(id);
+$('ip').value = boardIp;
+
+function msg(id, text, ok) {
+  const el = $(id);
+  el.textContent = text;
+  el.className = 'msg ' + (ok ? 'ok' : 'err');
+}
+
+async function board(path, opts) {
+  const r = await fetch('http://' + boardIp + path, opts);
+  const t = await r.text();
+  let j = null; try { j = JSON.parse(t); } catch (e) {}
+  return { ok: r.ok, j, t };
+}
+
+// ── 连接：优先从 bridge /health 自动取板子 IP ──
+async function connectBoard() {
+  boardIp = $('ip').value.trim();
+  if (!boardIp) {
+    try {
+      const h = await (await fetch('/health')).json();
+      if (h.device && h.device.indexOf('.') > 0) { boardIp = h.device; $('ip').value = boardIp; }
+    } catch (e) {}
+  }
+  if (!boardIp) { msg('msg1', '请先填板子 IP', false); return; }
+  localStorage.setItem('ap_ip', boardIp);
+  const r = await board('/api/v1/states');
+  if (!r.ok) { msg('msg1', '连接失败：' + r.t.slice(0, 60), false); return; }
+  states = r.j.states;
+  renderChips();
+  select(Object.keys(states).sort()[0]);
+  msg('msg1', '已连接 ' + boardIp + '，共 ' + Object.keys(states).length + ' 个状态', true);
+  loadRules();
+}
+
+function renderChips() {
+  const box = $('stateChips');
+  box.innerHTML = '';
+  Object.keys(states).sort().forEach(function (n) {
+    const d = document.createElement('div');
+    d.className = 'chip' + (n === selected ? ' sel' : '');
+    const c = states[n].led ? states[n].led.color : '#888';
+    d.innerHTML = '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + c + ';margin-right:6px"></span>' + n;
+    d.onclick = function () { select(n); };
+    box.appendChild(d);
+  });
+}
+
+function select(name) {
+  selected = name; isNew = false;
+  const r = states[name] || { led: {} };
+  $('f_name').value = name;
+  $('f_color').value = r.led.color || '#3BB8E8';
+  $('f_mode').value = r.led.mode || 'steady';
+  $('f_period').value = r.led.period || 800;
+  $('f_pv').textContent = $('f_period').value + 'ms';
+  loadScreenEditor(name);
+  renderChips();
+}
+
+function newRecipe() {
+  isNew = true; selected = '';
+  $('f_name').value = ''; $('f_name').disabled = false;
+  $('f_color').value = '#3BB8E8'; $('f_mode').value = 'breath'; $('f_period').value = 1500;
+  renderChips();
+  msg('msg1', '填写名字后保存', true);
+}
+
+async function saveRecipe() {
+  const name = $('f_name').value.trim();
+  if (!/^[a-zA-Z0-9_]{1,12}$/.test(name)) { msg('msg1', '名字须为 1~12 位字母/数字/下划线', false); return; }
+  const body = { led: {
+    color: $('f_color').value,
+    mode: $('f_mode').value,
+    period: parseInt($('f_period').value, 10),
+  }, screen: currentScreen() };
+  const r = await board('/api/v1/states/' + name, {
+    method: 'PUT', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(body),
+  });
+  msg('msg1', r.ok ? '已保存到板子 ✓' : '失败: ' + (r.j ? r.j.error : r.t.slice(0, 60)), r.ok);
+  if (r.ok) { isNew = false; $('f_name').disabled = false; await connectBoard(); select(name); }
+}
+
+async function delState() {
+  if (!selected) return;
+  if (!confirm('删除状态 ' + selected + '？')) return;
+  await board('/api/v1/states/' + selected, { method: 'DELETE' });
+  delete states[selected]; selected = null;
+  await connectBoard();
+  msg('msg1', '已删除', true);
+}
+
+async function testState() {
+  const name = $('f_name').value.trim();
+  const r = await board('/api/v1/state', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ state: name, source: 'ui' }),
+  });
+  msg('msg1', r.ok ? '已切换（看灯）' : '切换失败', r.ok);
+}
+
+async function toIdle() {
+  await board('/api/v1/state', {
+    method: 'POST', headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ state: 'idle' }),
+  });
+  msg('msg1', '已回 idle', true);
+}
+
+// ── 规则编辑 ──
+async function loadRules() {
+  try {
+    const r = await (await fetch('/api/v1/mapping')).text();
+    $('rules').value = r;
+    msg('msg2', '已载入 mapping.json', true);
+  } catch (e) { msg('msg2', '载入失败', false); }
+}
+
+async function saveRules() {
+  try { JSON.parse($('rules').value); } catch (e) { msg('msg2', 'JSON 格式错误：' + e.message, false); return; }
+  const r = await fetch('/api/v1/mapping', {
+    method: 'PUT', headers: {'Content-Type': 'application/json'}, body: $('rules').value,
+  });
+  msg('msg2', r.ok ? '已保存并热加载 ✓' : '保存失败', r.ok);
+}
+
+// ── 屏幕预览（与固件/模拟器同一套几何参数）──
+const sc2 = $('screen').getContext('2d');
+sc2.scale(2, 2);
+const SCREEN_DEFAULTS = {
+  idle:    { bg: '#000000', fg: '#8C9BAB', eye: 'sleep', anim: 'still', mouth: 'none',     extra: 'z',    shake: false },
+  thinking:{ bg: '#000000', fg: '#9D8FFF', eye: 'open',  anim: 'look',  mouth: 'flat',    extra: 'dots', shake: false },
+  reading: { bg: '#000000', fg: '#5AA2F0', eye: 'open',  anim: 'scan',  mouth: 'flat',    extra: 'none', shake: false },
+  writing: { bg: '#000000', fg: '#4FCF84', eye: 'open',  anim: 'down',  mouth: 'o',       extra: 'none', shake: false },
+  shell:   { bg: '#000000', fg: '#3BB8E8', eye: 'open',  anim: 'still', mouth: 'prompt',  extra: 'none', shake: false },
+  waiting: { bg: '#000000', fg: '#FFB03A', eye: 'wide',  anim: 'still', mouth: 'question',extra: 'none', shake: false },
+  done:    { bg: '#000000', fg: '#3BD692', eye: 'happy', anim: 'still', mouth: 'smile',   extra: 'none', shake: false },
+  error:   { bg: '#000000', fg: '#F04848', eye: 'x',     anim: 'still', mouth: 'wave',    extra: 'none', shake: true  },
+};
+const CUSTOM_DEFAULT = { bg: '#000000', fg: '#8C9BAB', eye: 'open', anim: 'still', mouth: 'flat', extra: 'none', shake: false };
+
+function loadScreenEditor(name) {
+  const recipe = states[name] || {};
+  const d = SCREEN_DEFAULTS[name] || CUSTOM_DEFAULT;
+  const s = recipe.screen || d;
+  $('s_bg').value = s.bg || '#000000';
+  $('s_fg').value = s.fg || d.fg;
+  $('s_eye').value = s.eye || d.eye;
+  $('s_anim').value = s.anim || d.anim;
+  $('s_mouth').value = s.mouth || d.mouth;
+  $('s_extra').value = s.extra || d.extra;
+  $('s_shake').checked = !!s.shake;
+}
+
+function currentScreen() {
+  return {
+    bg: $('s_bg').value, fg: $('s_fg').value,
+    eye: $('s_eye').value, anim: $('s_anim').value,
+    mouth: $('s_mouth').value, extra: $('s_extra').value,
+    shake: $('s_shake').checked,
+  };
+}
+
+function drawScreen(t) {
+  const p = currentScreen();
+  sc2.fillStyle = p.bg;
+  sc2.fillRect(0, 0, 240, 240);
+
+  let ox = 0, oy = 0;
+  if (p.shake) { ox = Math.sin(t * 28) * 2; oy = Math.cos(t * 33) * 1.5; }
+  sc2.save();
+  sc2.translate(ox, oy);
+  sc2.textAlign = 'center';
+  sc2.textBaseline = 'middle';
+
+  const lx = 120 - 38, rx = 120 + 38, ey = 96, my = 156;
+  const blink = ((t + 1.3) % 3.6) < 0.12;
+
+  function eyeOpen(x, y, r) {
+    sc2.fillStyle = p.fg;
+    sc2.beginPath(); sc2.arc(x, y, r, 0, 6.2832); sc2.fill();
+    sc2.fillStyle = 'rgba(255,255,255,.85)';
+    sc2.beginPath(); sc2.arc(x - r * 0.3, y - r * 0.35 - 1, r * 0.28, 0, 6.2832); sc2.fill();
+  }
+  function eyeArc(x, y, up) {
+    sc2.strokeStyle = p.fg; sc2.lineWidth = 9; sc2.lineCap = 'round';
+    sc2.beginPath();
+    if (up) sc2.arc(x, y + 8, 16, Math.PI * 1.12, Math.PI * 1.88);
+    else    sc2.arc(x, y - 6, 16, Math.PI * 0.15, Math.PI * 0.85);
+    sc2.stroke();
+  }
+  function eyeLine(x, y) {
+    sc2.strokeStyle = p.fg; sc2.lineWidth = 9; sc2.lineCap = 'round';
+    sc2.beginPath(); sc2.moveTo(x - 10, y); sc2.lineTo(x + 10, y); sc2.stroke();
+  }
+  function eyeX(x, y) {
+    sc2.strokeStyle = p.fg; sc2.lineWidth = 9; sc2.lineCap = 'round';
+    sc2.beginPath();
+    sc2.moveTo(x - 11, y - 11); sc2.lineTo(x + 11, y + 11);
+    sc2.moveTo(x + 11, y - 11); sc2.lineTo(x - 11, y + 11);
+    sc2.stroke();
+  }
+
+  const openStates = ['thinking', 'reading', 'writing', 'shell', 'waiting'];
+  if (p.eye === 'sleep') { eyeArc(lx, ey, false); eyeArc(rx, ey, false); }
+  else if (p.eye === 'happy') { eyeArc(lx, ey, true); eyeArc(rx, ey, true); }
+  else if (p.eye === 'x') { eyeX(lx, ey); eyeX(rx, ey); }
+  else {
+    const r = p.eye === 'wide' ? 16.5 : 14;
+    let dx = 0, dy = 0;
+    if (p.anim === 'look') { dx = Math.sin(t * 0.7) * 6 - 2; dy = -6; }
+    if (p.anim === 'scan') { dx = Math.sin(t * 2.4) * 8; dy = 3; }
+    if (p.anim === 'down') { dy = 5; }
+    if (blink) { eyeLine(lx, ey); eyeLine(rx, ey); }
+    else { eyeOpen(lx + dx, ey + dy, r); eyeOpen(rx + dx, ey + dy, r); }
+  }
+
+  sc2.strokeStyle = p.fg; sc2.fillStyle = p.fg; sc2.lineWidth = 9; sc2.lineCap = 'round';
+  switch (p.mouth) {
+    case 'flat':
+      sc2.beginPath(); sc2.moveTo(98, my); sc2.lineTo(142, my); sc2.stroke(); break;
+    case 'smile':
+      sc2.beginPath(); sc2.arc(120, my - 10, 26, Math.PI * 0.12, Math.PI * 0.88); sc2.stroke(); break;
+    case 'o':
+      sc2.beginPath(); sc2.arc(120, my, 9, 0, Math.PI * 2); sc2.fill(); break;
+    case 'wave':
+      sc2.beginPath();
+      sc2.moveTo(96, my);
+      sc2.quadraticCurveTo(108, my - 10, 120, my);
+      sc2.quadraticCurveTo(132, my + 10, 144, my);
+      sc2.stroke(); break;
+    case 'prompt':
+      sc2.font = 'bold 26px Menlo, monospace';
+      sc2.fillText((t % 1) < 0.55 ? '> _' : '>  ', 120, my - 2); break;
+    case 'question':
+      sc2.font = 'bold 34px sans-serif';
+      sc2.fillText('?', 120, my - 2 + Math.sin(t * 3) * 3); break;
+  }
+
+  if (p.extra === 'dots') {
+    for (let i = 0; i < 3; i++) {
+      sc2.globalAlpha = Math.sin(t * 2.4 - i * 0.7) > -0.2 ? 1 : 0.25;
+      sc2.beginPath(); sc2.arc(178 + i * 14, 40, 4.5, 0, Math.PI * 2); sc2.fill();
+    }
+    sc2.globalAlpha = 1;
+  } else if (p.extra === 'z') {
+    sc2.globalAlpha = 0.35 + 0.45 * Math.abs(Math.sin(t * 1.4));
+    sc2.fillStyle = p.fg;
+    sc2.font = 'bold 20px sans-serif';
+    sc2.fillText('z', 196, 44);
+    sc2.globalAlpha = 1;
+  }
+  sc2.restore();
+}
+
+let lastScreenDraw = 0;
+function screenLoop(ms) {
+  if (ms - lastScreenDraw > 33) { lastScreenDraw = ms; drawScreen(ms / 1000); }
+  requestAnimationFrame(screenLoop);
+}
+requestAnimationFrame(screenLoop);
+$('s_bg').addEventListener('input', drawScreenPreviewOnce);
+$('s_fg').addEventListener('input', drawScreenPreviewOnce);
+function drawScreenPreviewOnce() { drawScreen(performance.now() / 1000); }
+
+function ledLevel(mode, period, t) {
+  const tt = t % period;
+  if (mode === 'steady') return 1;
+  if (mode === 'breath') { const n = 0.5 - 0.5 * Math.cos(tt * 2 * Math.PI / period); return n * n; }
+  if (mode === 'blink') return tt < period / 2 ? 1 : 0;
+  if (mode === 'double') return (tt < 120 || (tt >= 240 && tt < 360)) ? 1 : 0;
+  return 0;
+}
+
+function previewLoop() {
+  const el = $('ledPreview');
+  const color = $('f_color').value;
+  const mode = $('f_mode').value;
+  let period = parseInt($('f_period').value, 10);
+  if (mode === 'steady' || !period) period = 1000;
+  const level = ledLevel(mode, period, performance.now());
+  const a = 0.1 + 0.9 * level;
+  el.style.background = color;
+  el.style.opacity = (0.12 + 0.88 * level).toFixed(3);
+  el.style.boxShadow = '0 0 ' + Math.round(24 * level) + 'px ' + color;
+  requestAnimationFrame(previewLoop);
+}
+requestAnimationFrame(previewLoop);
+connectBoard();  // 自动连接：优先用上次 IP，否则从 bridge /health 取板子地址
+</script>
+</body>
+</html>

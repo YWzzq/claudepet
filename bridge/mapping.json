@@ -1,0 +1,34 @@
+{
+  "rules": [
+    {"source": "claude", "event": "SessionStart", "state": "thinking"},
+    {"source": "claude", "event": "UserPromptSubmit", "state": "thinking"},
+    {"source": "claude", "event": "PreToolUse", "tool": "Read*", "state": "reading"},
+    {"source": "claude", "event": "PreToolUse", "tool": "Grep", "state": "reading"},
+    {"source": "claude", "event": "PreToolUse", "tool": "Glob", "state": "reading"},
+    {"source": "claude", "event": "PreToolUse", "tool": "LS", "state": "reading"},
+    {"source": "claude", "event": "PreToolUse", "tool": "WebFetch", "state": "reading"},
+    {"source": "claude", "event": "PreToolUse", "tool": "WebSearch", "state": "reading"},
+    {"source": "claude", "event": "PreToolUse", "tool": "TodoRead", "state": "reading"},
+    {"source": "claude", "event": "PreToolUse", "tool": "Edit", "state": "writing"},
+    {"source": "claude", "event": "PreToolUse", "tool": "Write", "state": "writing"},
+    {"source": "claude", "event": "PreToolUse", "tool": "MultiEdit", "state": "writing"},
+    {"source": "claude", "event": "PreToolUse", "tool": "NotebookEdit", "state": "writing"},
+    {"source": "claude", "event": "PreToolUse", "tool": "Bash*", "state": "shell"},
+    {"source": "claude", "event": "PreToolUse", "tool": "Task", "state": "thinking"},
+    {"source": "claude", "event": "PreToolUse", "state": "thinking"},
+    {"source": "claude", "event": "PostToolUse", "on_error": true, "state": "error"},
+    {"source": "claude", "event": "Notification", "state": "waiting", "label_from": "message"},
+    {"source": "claude", "event": "Stop", "state": "done"},
+    {"source": "claude", "event": "SessionEnd", "state": "__drop__"},
+    {"source": "codex", "type": "task_started", "state": "thinking"},
+    {"source": "codex", "type": "turn_started", "state": "thinking"},
+    {"source": "codex", "type": "session_configured", "state": "thinking"},
+    {"source": "codex", "type": "agent-turn-complete", "state": "done", "label": "turn"},
+    {"source": "codex", "type": "error", "state": "error"}
+  ],
+  "priority": {
+    "idle": 0, "thinking": 1, "reading": 2, "shell": 3, "writing": 4,
+    "done": 5, "error": 6, "waiting": 7
+  },
+  "timeouts": {"session": 90, "done_hold": 5, "heartbeat": 20}
+}
