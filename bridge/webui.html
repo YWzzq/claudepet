@@ -10,14 +10,20 @@
     margin: 0; padding: 24px 16px 48px; background: #12141A; color: #E5E7EB;
     font-family: -apple-system, "Hiragino Sans GB", "PingFang SC", sans-serif;
   }
-  h1 { font-size: 20px; margin: 0 0 4px; text-align: center; }
-  .sub { text-align: center; font-size: 12px; color: #9CA3AF; margin-bottom: 20px; }
-  .wrap { display: flex; gap: 20px; max-width: 1000px; margin: 0 auto; flex-wrap: wrap; justify-content: center; }
+  h1 { font-size: 20px; margin: 0 0 6px; text-align: center; }
+  .sub { text-align: center; font-size: 12px; color: #9CA3AF; margin-bottom: 16px; }
+  .tabs { display: flex; gap: 8px; justify-content: center; margin-bottom: 18px; }
+  .tabs button {
+    background: #1B1F27; color: #9CA3AF; border: 1px solid #2A3040;
+    border-radius: 8px; padding: 9px 22px; font-size: 14px; cursor: pointer;
+  }
+  .tabs button.on { color: #fff; background: #2563EB; border-color: #2563EB; }
   .panel {
     background: #1B1F27; border: 1px solid #2A3040; border-radius: 14px;
-    padding: 18px; width: 420px; max-width: 96vw;
+    padding: 20px; max-width: 980px; margin: 0 auto;
   }
   .panel h2 { font-size: 15px; margin: 0 0 12px; color: #93C5FD; }
+  .panel h3 { font-size: 13px; margin: 18px 0 8px; color: #93C5FD; }
   .conn { display: flex; gap: 8px; margin-bottom: 14px; }
   .conn input {
     flex: 1; background: #12141A; border: 1px solid #374151; color: #E5E7EB;
@@ -31,100 +37,92 @@
   button.gray { background: #374151; }
   button.red { background: #B91C1C; }
   button.green { background: #15803D; }
+  button.small { padding: 4px 9px; font-size: 12px; }
   .states { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
   .states .chip {
     padding: 6px 12px; border-radius: 16px; font-size: 13px; cursor: pointer;
     background: #262C38; border: 1.5px solid transparent; color: #E5E7EB;
   }
   .states .chip.sel { border-color: #fff; }
-  .row { display: flex; align-items: center; gap: 12px; margin: 10px 0; font-size: 14px; }
-  .row label { width: 64px; color: #9CA3AF; }
+  .row { display: flex; align-items: center; gap: 12px; margin: 9px 0; font-size: 14px; }
+  .row label { width: 70px; flex-shrink: 0; color: #9CA3AF; }
   input[type=color] { width: 52px; height: 34px; border: none; background: none; cursor: pointer; }
   input[type=range] { flex: 1; }
-  select, input[type=text] {
+  select, input[type=text], input[type=number] {
     background: #12141A; border: 1px solid #374151; color: #E5E7EB;
     border-radius: 6px; padding: 6px 10px; font-size: 13px;
   }
-  .ledbox { display: flex; align-items: center; gap: 18px; margin: 14px 0; }
-  .led {
-    width: 54px; height: 54px; border-radius: 50%;
-    background: #333; box-shadow: 0 0 0 rgba(0,0,0,0);
-  }
-  .ledhint { font-size: 12px; color: #6B7280; }
+  input[type=text] { flex: 1; }
+  .ledbox { display: flex; align-items: center; gap: 18px; margin: 12px 0; }
+  .led { width: 54px; height: 54px; border-radius: 50%; background: #333; }
+  .hint { font-size: 12px; color: #6B7280; line-height: 1.6; }
   .btns { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
-  textarea {
-    width: 100%; height: 260px; background: #12141A; color: #E5E7EB;
-    border: 1px solid #374151; border-radius: 8px; padding: 10px;
-    font-family: ui-monospace, Menlo, monospace; font-size: 12px; resize: vertical;
-  }
   .msg { font-size: 12px; margin-top: 8px; min-height: 16px; }
   .msg.ok { color: #4ADE80; } .msg.err { color: #F87171; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+  .rulecard {
+    background: #12141A; border: 1px solid #2A3040; border-radius: 10px;
+    padding: 12px; margin-bottom: 10px;
+  }
+  .rulecard .head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .rulecard .head .idx { font-size: 12px; color: #6B7280; }
+  .rulegrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .rulegrid .f { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #9CA3AF; }
+  .rulegrid .f span { width: 44px; flex-shrink: 0; }
+  .rulegrid input, .rulegrid select { width: 100%; }
+  .prioRow { display: flex; align-items: center; gap: 10px; margin: 6px 0; font-size: 13px; }
+  .prioRow .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .prioRow .nm { width: 90px; }
+  .prioRow input { width: 70px; }
 </style>
 </head>
 <body>
   <h1>AgentPet 配置台</h1>
-  <div class="sub">左边管板子上的状态配方（写进 NVS）· 右边管事件绑定规则（mapping.json 热加载）</div>
-  <div class="wrap">
-    <!-- ══ 左：配方管理 ══ -->
-    <div class="panel">
-      <h2>状态配方（板子）</h2>
-      <div class="conn">
-        <input id="ip" placeholder="板子 IP，如 192.168.1.188">
-        <button onclick="connectBoard()">连接</button>
-      </div>
-      <div class="states" id="stateChips"></div>
-      <div class="row"><label>状态名</label><input type="text" id="f_name" placeholder="1~12位字母数字_"></div>
-      <div class="row"><label>颜色</label><input type="color" id="f_color" value="#3BB8E8"></div>
-      <div class="row"><label>灯效</label>
-        <select id="f_mode">
-          <option value="steady">steady 常亮</option>
-          <option value="breath">breath 呼吸</option>
-          <option value="blink">blink 闪烁</option>
-          <option value="double">double 双闪</option>
-        </select>
-      </div>
-      <div class="row"><label>周期</label>
-        <input type="range" id="f_period" min="50" max="5000" step="50" value="800" oninput="document.getElementById('f_pv').textContent=value+'ms'">
-        <span id="f_pv" style="width:56px">800ms</span>
-      </div>
-      <div class="ledbox">
-        <div class="led" id="ledPreview"></div>
-        <div class="ledhint">LED 实时预览<br>（保存前即可看效果）</div>
-      </div>
-      <div class="btns">
-        <button class="gray" onclick="newRecipe()">新增</button>
-        <button onclick="saveRecipe()">保存到板子</button>
-        <button class="green" onclick="testState()">试灯</button>
-        <button class="gray" onclick="toIdle()">回 idle</button>
-        <button class="red" onclick="delState()">删除</button>
-      </div>
-      <div class="msg" id="msg1"></div>
-    </div>
-
-    <!-- ══ 右：绑定关系 ══ -->
-    <div class="panel">
-      <h2>事件绑定规则（mapping.json）</h2>
-      <div style="font-size:12px;color:#9CA3AF;margin-bottom:10px;line-height:1.6">
-        规则字段：source（claude/codex）· event 或 type（事件名）· tool（支持通配符，如 Bash*）·
-        on_error（仅出错时）· state（目标状态）· priority（优先级覆盖）。数组顺序即匹配顺序。
-      </div>
-      <textarea id="rules" spellcheck="false"></textarea>
-      <div class="btns">
-        <button class="gray" onclick="loadRules()">重新载入</button>
-        <button class="green" onclick="saveRules()">保存并热加载</button>
-      </div>
-      <div class="msg" id="msg2"></div>
-    </div>
+  <div class="sub">配方管理写入板子 NVS · 事件绑定写入 mapping.json（保存即热加载）</div>
+  <div class="tabs">
+    <button id="tabbtn_recipe" class="on" onclick="showTab('recipe')">状态配方</button>
+    <button id="tabbtn_bind" onclick="showTab('bind')">事件绑定</button>
   </div>
 
-  <!-- ══ 屏幕预览（V1.1 配方）══ -->
-  <div class="panel" style="max-width:1000px;margin:0 auto;width:1000px">
-    <h2>屏幕预览（240×240 · 配方实时渲染 · 屏幕到货前先看效果）</h2>
-    <div style="display:flex;gap:24px;flex-wrap:wrap">
-      <canvas id="screen" width="480" height="480" style="width:384px;height:384px;border-radius:10px;border:1px solid #2A3040"></canvas>
-      <div style="flex:1;min-width:220px">
+  <!-- ═══════════ 页签一：状态配方（灯光 + 屏幕 完整配方） ═══════════ -->
+  <div class="panel" id="tab_recipe">
+    <div class="conn">
+      <input id="ip" placeholder="板子 IP，如 192.168.1.188">
+      <button onclick="connectBoard()">连接</button>
+      <button class="gray" onclick="newRecipe()">＋新增状态</button>
+    </div>
+    <div class="states" id="stateChips"></div>
+
+    <div class="grid2">
+      <div>
+        <h3>💡 灯光</h3>
+        <div class="row"><label>状态名</label><input type="text" id="f_name" placeholder="1~12位字母数字_"></div>
+        <div class="row"><label>颜色</label><input type="color" id="f_color" value="#3BB8E8"></div>
+        <div class="row"><label>灯效</label>
+          <select id="f_mode">
+            <option value="steady">steady 常亮</option>
+            <option value="breath">breath 呼吸</option>
+            <option value="blink">blink 闪烁</option>
+            <option value="double">double 双闪</option>
+          </select>
+        </div>
+        <div class="row"><label>周期</label>
+          <input type="range" id="f_period" min="50" max="5000" step="50" value="800"
+                 oninput="document.getElementById('f_pv').textContent=value+'ms'">
+          <span id="f_pv" style="width:56px">800ms</span>
+        </div>
+        <div class="ledbox">
+          <div class="led" id="ledPreview"></div>
+          <div class="hint">LED 实时预览<br>（保存前即可看效果）</div>
+        </div>
+      </div>
+      <div>
+        <h3>🖥 屏幕（240×240）</h3>
+        <canvas id="screen" width="480" height="480"
+                style="width:100%;max-width:300px;border-radius:10px;border:1px solid #2A3040"></canvas>
         <div class="row"><label>背景</label><input type="color" id="s_bg" value="#000000"></div>
-        <div class="row"><label>五官色</label><input type="color" id="s_fg" value="#9D8FFF"></div>
+        <div class="row"><label>五官色</label><input type="color" id="s_fg" value="#8C9BAB"></div>
         <div class="row"><label>眼睛</label>
           <select id="s_eye">
             <option value="open">open 圆眼</option>
@@ -161,20 +159,56 @@
           </select>
         </div>
         <div class="row"><label>抖动</label><input type="checkbox" id="s_shake"></div>
-        <div style="font-size:12px;color:#6B7280;margin-top:10px;line-height:1.6">
-          这些 screen 参数会随配方一起保存进板子。当前固件暂不渲染到真屏，
-          屏幕到货后 V1.1 固件直接按此配方点亮——预览即最终效果。
-        </div>
       </div>
     </div>
+
+    <div class="btns">
+      <button onclick="saveRecipe()">保存完整配方到板子</button>
+      <button class="green" onclick="testState()">试灯</button>
+      <button class="gray" onclick="toIdle()">回 idle</button>
+      <button class="red" onclick="delState()">删除状态</button>
+    </div>
+    <div class="msg" id="msg1"></div>
+  </div>
+
+  <!-- ═══════════ 页签二：事件绑定 ═══════════ -->
+  <div class="panel" id="tab_bind" style="display:none">
+    <h2>事件 → 状态 绑定规则</h2>
+    <div class="hint" style="margin-bottom:12px">
+      数组顺序即匹配顺序（从上到下第一条命中生效）。字段：来源 / 事件名 / 工具通配符（如 Bash*）/
+      附加条件（事件里的字段=值）/ 仅出错时。状态下拉来自板子配方库。
+      <br>例：Codex 回合完成 → done；Claude 请求授权 → waiting。
+    </div>
+    <div class="btns" style="margin:0 0 12px">
+      <button onclick="addRule()">＋新增规则</button>
+      <button class="green" onclick="saveRules()">保存并热加载</button>
+      <button class="gray" onclick="loadAll()">重新载入</button>
+    </div>
+    <div id="ruleList"></div>
+
+    <h3>状态优先级（数值越大越优先插队）</h3>
+    <div id="prioRows"></div>
+
+    <h3>超时（秒）</h3>
+    <div class="row"><label>done 停留</label><input type="number" id="t_done" value="5" min="0" style="width:80px"></div>
+    <div class="row"><label>会话超时</label><input type="number" id="t_session" value="90" min="10" style="width:80px"></div>
+    <div class="row"><label>心跳间隔</label><input type="number" id="t_heartbeat" value="20" min="5" style="width:80px"></div>
+
+    <div class="btns">
+      <button class="green" onclick="saveRules()">保存全部并热加载</button>
+    </div>
+    <div class="msg" id="msg2"></div>
   </div>
 
 <script>
 'use strict';
 let boardIp = localStorage.getItem('ap_ip') || '';
-let states = {};        // name -> recipe
+let states = {};   // 板子上的配方：name -> {led:{...}, screen:{...}}
 let selected = null;
 let isNew = false;
+let rules = [];    // 绑定规则数组
+let cfg = { priority: {}, done_hold: 5, session_timeout: 90, heartbeat: 20 };
+let stateNames = ['idle', 'thinking', 'reading', 'writing', 'shell', 'waiting', 'done', 'error'];
 
 const $ = id => document.getElementById(id);
 $('ip').value = boardIp;
@@ -192,7 +226,7 @@ async function board(path, opts) {
   return { ok: r.ok, j, t };
 }
 
-// ── 连接：优先从 bridge /health 自动取板子 IP ──
+// ── 连接与总加载 ──
 async function connectBoard() {
   boardIp = $('ip').value.trim();
   if (!boardIp) {
@@ -206,12 +240,30 @@ async function connectBoard() {
   const r = await board('/api/v1/states');
   if (!r.ok) { msg('msg1', '连接失败：' + r.t.slice(0, 60), false); return; }
   states = r.j.states;
+  stateNames = Array.from(new Set(stateNames.concat(Object.keys(states))));
   renderChips();
-  select(Object.keys(states).sort()[0]);
+  select(Object.keys(states).sort()[0] || 'idle');
   msg('msg1', '已连接 ' + boardIp + '，共 ' + Object.keys(states).length + ' 个状态', true);
-  loadRules();
 }
 
+async function loadAll() {
+  await connectBoard();
+  try {
+    const m = await (await fetch('/api/v1/mapping')).json();
+    rules = m.rules || [];
+    cfg = { done_hold: 5, session_timeout: 90, heartbeat: 20 };
+    if (m.priority) cfg.priority = Object.assign({}, cfg.priority, m.priority);
+    if (m.timeouts) Object.assign(cfg, m.timeouts);
+    renderRules();
+    renderPriority();
+    $('t_done').value = cfg.done_hold;
+    $('t_session').value = cfg.session_timeout;
+    $('t_heartbeat').value = cfg.heartbeat;
+    msg('msg2', '已载入 ' + rules.length + ' 条规则', true);
+  } catch (e) { msg('msg2', 'mapping 载入失败', false); }
+}
+
+// ── 配方编辑 ──
 function renderChips() {
   const box = $('stateChips');
   box.innerHTML = '';
@@ -225,15 +277,35 @@ function renderChips() {
   });
 }
 
+const SCREEN_DEFAULTS = {
+  idle:    { bg: '#000000', fg: '#646E7D', eye: 'sleep', anim: 'still', mouth: 'none',     extra: 'z',    shake: false },
+  thinking:{ bg: '#000000', fg: '#9D8FFF', eye: 'open',  anim: 'look',  mouth: 'flat',    extra: 'dots', shake: false },
+  reading: { bg: '#000000', fg: '#5AA2F0', eye: 'open',  anim: 'scan',  mouth: 'flat',    extra: 'none', shake: false },
+  writing: { bg: '#000000', fg: '#4FCF84', eye: 'open',  anim: 'down',  mouth: 'o',       extra: 'none', shake: false },
+  shell:   { bg: '#000000', fg: '#3BB8E8', eye: 'open',  anim: 'still', mouth: 'prompt',  extra: 'none', shake: false },
+  waiting: { bg: '#000000', fg: '#FFB03A', eye: 'wide',  anim: 'still', mouth: 'question',extra: 'none', shake: false },
+  done:    { bg: '#000000', fg: '#3BD692', eye: 'happy', anim: 'still', mouth: 'smile',   extra: 'none', shake: false },
+  error:   { bg: '#000000', fg: '#F04848', eye: 'x',     anim: 'still', mouth: 'wave',    extra: 'none', shake: true  },
+};
+const CUSTOM_DEFAULT = { bg: '#000000', fg: '#8C9BAB', eye: 'open', anim: 'still', mouth: 'flat', extra: 'none', shake: false };
+
 function select(name) {
   selected = name; isNew = false;
-  const r = states[name] || { led: {} };
+  const r = states[name] || {};
   $('f_name').value = name;
-  $('f_color').value = r.led.color || '#3BB8E8';
-  $('f_mode').value = r.led.mode || 'steady';
-  $('f_period').value = r.led.period || 800;
+  $('f_name').disabled = !isNew;
+  $('f_color').value = (r.led && r.led.color) || '#3BB8E8';
+  $('f_mode').value = (r.led && r.led.mode) || 'steady';
+  $('f_period').value = (r.led && r.led.period) || 800;
   $('f_pv').textContent = $('f_period').value + 'ms';
-  loadScreenEditor(name);
+  const s = r.screen || SCREEN_DEFAULTS[name] || CUSTOM_DEFAULT;
+  $('s_bg').value = s.bg || '#000000';
+  $('s_fg').value = s.fg || '#8C9BAB';
+  $('s_eye').value = s.eye || 'open';
+  $('s_anim').value = s.anim || 'still';
+  $('s_mouth').value = s.mouth || 'flat';
+  $('s_extra').value = s.extra || 'none';
+  $('s_shake').checked = !!s.shake;
   renderChips();
 }
 
@@ -241,24 +313,41 @@ function newRecipe() {
   isNew = true; selected = '';
   $('f_name').value = ''; $('f_name').disabled = false;
   $('f_color').value = '#3BB8E8'; $('f_mode').value = 'breath'; $('f_period').value = 1500;
+  $('s_bg').value = '#000000'; $('s_fg').value = '#3BB8E8';
+  $('s_eye').value = 'open'; $('s_anim').value = 'still';
+  $('s_mouth').value = 'flat'; $('s_extra').value = 'none'; $('s_shake').checked = false;
   renderChips();
-  msg('msg1', '填写名字后保存', true);
+  msg('msg1', '填写名字与外观后保存', true);
+}
+
+function collectRecipe() {
+  return {
+    led: {
+      color: $('f_color').value,
+      mode: $('f_mode').value,
+      period: parseInt($('f_period').value, 10),
+    },
+    screen: {
+      bg: $('s_bg').value, fg: $('s_fg').value,
+      eye: $('s_eye').value, anim: $('s_anim').value,
+      mouth: $('s_mouth').value, extra: $('s_extra').value,
+      shake: $('s_shake').checked,
+    },
+  };
 }
 
 async function saveRecipe() {
   const name = $('f_name').value.trim();
   if (!/^[a-zA-Z0-9_]{1,12}$/.test(name)) { msg('msg1', '名字须为 1~12 位字母/数字/下划线', false); return; }
-  const body = { led: {
-    color: $('f_color').value,
-    mode: $('f_mode').value,
-    period: parseInt($('f_period').value, 10),
-  }, screen: currentScreen() };
   const r = await board('/api/v1/states/' + name, {
     method: 'PUT', headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(body),
+    body: JSON.stringify(collectRecipe()),
   });
-  msg('msg1', r.ok ? '已保存到板子 ✓' : '失败: ' + (r.j ? r.j.error : r.t.slice(0, 60)), r.ok);
-  if (r.ok) { isNew = false; $('f_name').disabled = false; await connectBoard(); select(name); }
+  msg('msg1', r.ok ? '完整配方已保存到板子 ✓' : '失败: ' + (r.j ? r.j.error : r.t.slice(0, 60)), r.ok);
+  if (r.ok) {
+    isNew = false; $('f_name').disabled = true;
+    await connectBoard(); select(name);
+  }
 }
 
 async function delState() {
@@ -272,11 +361,12 @@ async function delState() {
 
 async function testState() {
   const name = $('f_name').value.trim();
+  if (!states[name]) { msg('msg1', '该状态尚未保存，请先保存再试灯', false); return; }
   const r = await board('/api/v1/state', {
     method: 'POST', headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ state: name, source: 'ui' }),
   });
-  msg('msg1', r.ok ? '已切换（看灯）' : '切换失败', r.ok);
+  msg('msg1', r.ok ? '已切换（最多保持 20 秒，心跳会拉回真实状态）' : '切换失败', r.ok);
 }
 
 async function toIdle() {
@@ -287,62 +377,159 @@ async function toIdle() {
   msg('msg1', '已回 idle', true);
 }
 
-// ── 规则编辑 ──
-async function loadRules() {
-  try {
-    const r = await (await fetch('/api/v1/mapping')).text();
-    $('rules').value = r;
-    msg('msg2', '已载入 mapping.json', true);
-  } catch (e) { msg('msg2', '载入失败', false); }
+// ── 事件绑定规则编辑 ──
+function stateOptions(sel) {
+  return stateNames.map(function (n) {
+    return '<option value="' + n + '"' + (n === sel ? ' selected' : '') + '>' + n + '</option>';
+  }).join('');
+}
+
+function renderRules() {
+  const box = $('ruleList');
+  if (!rules.length) { box.innerHTML = '<div class="hint">（还没有规则，点"新增规则"）</div>'; return; }
+  box.innerHTML = rules.map(function (r, i) {
+    return '<div class="rulecard">'
+      + '<div class="head"><span class="idx">规则 #' + (i + 1) + '</span>'
+      + '<span>'
+      + '<button class="small gray" onclick="moveRule(' + i + ',-1)">↑</button> '
+      + '<button class="small gray" onclick="moveRule(' + i + ',1)">↓</button> '
+      + '<button class="small red" onclick="delRule(' + i + ')">删除</button>'
+      + '</span></div>'
+      + '<div class="rulegrid">'
+      + '<div class="f"><span>来源</span><select data-i="' + i + '" data-k="source">'
+      + '<option value="">任意</option>'
+      + '<option value="claude"' + (r.source === 'claude' ? ' selected' : '') + '>claude</option>'
+      + '<option value="codex"' + (r.source === 'codex' ? ' selected' : '') + '>codex</option>'
+      + '</select></div>'
+      + '<div class="f"><span>状态→</span><select data-i="' + i + '" data-k="state">'
+      + stateOptions(r.state) + '</select></div>'
+      + '<div class="f"><span>事件名</span><input data-i="' + i + '" data-k="event" value="'
+      + (r.event || r.type || '') + '" placeholder="如 PreToolUse / agent-turn-complete"></div>'
+      + '<div class="f"><span>工具</span><input data-i="' + i + '" data-k="tool" value="'
+      + (r.tool || '') + '" placeholder="通配符，如 Bash*"></div>'
+      + '<div class="f"><span>优先级</span><input type="number" data-i="' + i + '" data-k="priority" value="'
+      + (r.priority != null ? r.priority : '') + '" placeholder="默认"></div>'
+      + '<div class="f"><span>标签</span><input data-i="' + i + '" data-k="label" value="'
+      + (r.label || '') + '" placeholder="可空"></div>'
+      + '<div class="f"><span>条件</span><input data-i="' + i + '" data-k="whenKey" value="'
+      + (r.whenKey || '') + '" placeholder="字段名，如 message"></div>'
+      + '<div class="f"><span>等于</span><input data-i="' + i + '" data-k="whenValue" value="'
+      + (r.whenValue != null ? r.whenValue : '') + '" placeholder="字段值"></div>'
+      + '<div class="f"><span>仅出错</span><input type="checkbox" data-i="' + i + '" data-k="on_error"'
+      + (r.on_error ? ' checked' : '') + '></div>'
+      + '</div></div>';
+  }).join('');
+}
+
+function readRuleCard(i) {
+  const out = { state: 'idle' };
+  document.querySelectorAll('[data-i="' + i + '"]').forEach(function (el) {
+    const k = el.dataset.k;
+    let v = el.type === 'checkbox' ? el.checked : el.value;
+    if (v === '' || v == null) return;
+    if (k === 'priority') v = parseInt(v, 10);
+    if (k === 'whenValue' && /^-?\d+(\.\d+)?$/.test(String(v))) v = Number(v);
+    if (k === 'whenKey') { if (v) out.whenKey = v; return; }
+    if (k === 'whenValue') { if (v !== '' && out.whenKey) out['when'] = JSON.parse('{"' + out.whenKey + '": ' + JSON.stringify(v) + '}'); return; }
+    out[k] = v;
+  });
+  return out;
+}
+
+function addRule() {
+  collectRuleCards();  // 先保存当前卡片内容
+  rules.push({ state: stateNames[0] });
+  renderRules();
+}
+
+function moveRule(i, d) {
+  collectRuleCards();
+  const j = i + d;
+  if (j < 0 || j >= rules.length) return;
+  const t = rules[i]; rules[i] = rules[j]; rules[j] = t;
+  renderRules();
+}
+
+function delRule(i) {
+  collectRuleCards();
+  rules.splice(i, 1);
+  renderRules();
+}
+
+function collectRuleCards() {
+  rules = rules.map(function (_, i) { return readRuleCard(i); });
 }
 
 async function saveRules() {
-  try { JSON.parse($('rules').value); } catch (e) { msg('msg2', 'JSON 格式错误：' + e.message, false); return; }
-  const r = await fetch('/api/v1/mapping', {
-    method: 'PUT', headers: {'Content-Type': 'application/json'}, body: $('rules').value,
+  collectRuleCards();
+  const payload = {
+    rules: rules,
+    priority: {},
+    timeouts: {
+      done_hold: parseFloat($('t_done').value) || 5,
+      session: parseFloat($('t_session').value) || 90,
+      heartbeat: parseFloat($('t_heartbeat').value) || 20,
+    },
+  };
+  document.querySelectorAll('#prioRows input').forEach(function (el) {
+    payload.priority[el.dataset.state] = parseInt(el.value, 10) || 0;
   });
-  msg('msg2', r.ok ? '已保存并热加载 ✓' : '保存失败', r.ok);
+  try {
+    const r = await fetch('/api/v1/mapping', {
+      method: 'PUT', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(payload),
+    });
+    msg('msg2', r.ok ? '已保存并热加载 ✓' : '保存失败', r.ok);
+  } catch (e) { msg('msg2', '保存失败', false); }
 }
 
-// ── 屏幕预览（与固件/模拟器同一套几何参数）──
+function renderPriority() {
+  const box = $('prioRows');
+  const names = Array.from(new Set(stateNames.concat(Object.keys(cfg.priority))));
+  box.innerHTML = names.map(function (n) {
+    const c = (states[n] && states[n].led && states[n].led.color) || '#666';
+    const v = cfg.priority[n] != null ? cfg.priority[n] : 0;
+    return '<div class="prioRow"><span class="dot" style="background:' + c + '"></span>'
+      + '<span class="nm">' + n + '</span>'
+      + '<input type="number" data-state="' + n + '" value="' + v + '"></div>';
+  }).join('');
+}
+
+// ── LED 预览：与固件同一套算法 ──
+function ledLevel(mode, period, t) {
+  const tt = t % period;
+  if (mode === 'steady') return 1;
+  if (mode === 'breath') { const n = 0.5 - 0.5 * Math.cos(tt * 2 * Math.PI / period); return n * n; }
+  if (mode === 'blink') return tt < period / 2 ? 1 : 0;
+  if (mode === 'double') return (tt < 120 || (tt >= 240 && tt < 360)) ? 1 : 0;
+  return 0;
+}
+
+function previewLoop() {
+  const el = $('ledPreview');
+  const color = $('f_color').value;
+  const mode = $('f_mode').value;
+  let period = parseInt($('f_period').value, 10);
+  if (mode === 'steady' || !period) period = 1000;
+  const level = ledLevel(mode, period, performance.now());
+  el.style.background = color;
+  el.style.opacity = (0.12 + 0.88 * level).toFixed(3);
+  el.style.boxShadow = '0 0 ' + Math.round(24 * level) + 'px ' + color;
+  requestAnimationFrame(previewLoop);
+}
+requestAnimationFrame(previewLoop);
+
+// ── 屏幕预览：与固件/模拟器同一套几何参数 ──
 const sc2 = $('screen').getContext('2d');
 sc2.scale(2, 2);
-const SCREEN_DEFAULTS = {
-  idle:    { bg: '#000000', fg: '#8C9BAB', eye: 'sleep', anim: 'still', mouth: 'none',     extra: 'z',    shake: false },
-  thinking:{ bg: '#000000', fg: '#9D8FFF', eye: 'open',  anim: 'look',  mouth: 'flat',    extra: 'dots', shake: false },
-  reading: { bg: '#000000', fg: '#5AA2F0', eye: 'open',  anim: 'scan',  mouth: 'flat',    extra: 'none', shake: false },
-  writing: { bg: '#000000', fg: '#4FCF84', eye: 'open',  anim: 'down',  mouth: 'o',       extra: 'none', shake: false },
-  shell:   { bg: '#000000', fg: '#3BB8E8', eye: 'open',  anim: 'still', mouth: 'prompt',  extra: 'none', shake: false },
-  waiting: { bg: '#000000', fg: '#FFB03A', eye: 'wide',  anim: 'still', mouth: 'question',extra: 'none', shake: false },
-  done:    { bg: '#000000', fg: '#3BD692', eye: 'happy', anim: 'still', mouth: 'smile',   extra: 'none', shake: false },
-  error:   { bg: '#000000', fg: '#F04848', eye: 'x',     anim: 'still', mouth: 'wave',    extra: 'none', shake: true  },
-};
-const CUSTOM_DEFAULT = { bg: '#000000', fg: '#8C9BAB', eye: 'open', anim: 'still', mouth: 'flat', extra: 'none', shake: false };
 
-function loadScreenEditor(name) {
-  const recipe = states[name] || {};
-  const d = SCREEN_DEFAULTS[name] || CUSTOM_DEFAULT;
-  const s = recipe.screen || d;
-  $('s_bg').value = s.bg || '#000000';
-  $('s_fg').value = s.fg || d.fg;
-  $('s_eye').value = s.eye || d.eye;
-  $('s_anim').value = s.anim || d.anim;
-  $('s_mouth').value = s.mouth || d.mouth;
-  $('s_extra').value = s.extra || d.extra;
-  $('s_shake').checked = !!s.shake;
-}
-
-function currentScreen() {
-  return {
+function drawScreen(t) {
+  const p = {
     bg: $('s_bg').value, fg: $('s_fg').value,
     eye: $('s_eye').value, anim: $('s_anim').value,
     mouth: $('s_mouth').value, extra: $('s_extra').value,
     shake: $('s_shake').checked,
   };
-}
-
-function drawScreen(t) {
-  const p = currentScreen();
   sc2.fillStyle = p.bg;
   sc2.fillRect(0, 0, 240, 240);
 
@@ -381,7 +568,6 @@ function drawScreen(t) {
     sc2.stroke();
   }
 
-  const openStates = ['thinking', 'reading', 'writing', 'shell', 'waiting'];
   if (p.eye === 'sleep') { eyeArc(lx, ey, false); eyeArc(rx, ey, false); }
   else if (p.eye === 'happy') { eyeArc(lx, ey, true); eyeArc(rx, ey, true); }
   else if (p.eye === 'x') { eyeX(lx, ey); eyeX(rx, ey); }
@@ -439,34 +625,20 @@ function screenLoop(ms) {
   requestAnimationFrame(screenLoop);
 }
 requestAnimationFrame(screenLoop);
-$('s_bg').addEventListener('input', drawScreenPreviewOnce);
-$('s_fg').addEventListener('input', drawScreenPreviewOnce);
-function drawScreenPreviewOnce() { drawScreen(performance.now() / 1000); }
 
-function ledLevel(mode, period, t) {
-  const tt = t % period;
-  if (mode === 'steady') return 1;
-  if (mode === 'breath') { const n = 0.5 - 0.5 * Math.cos(tt * 2 * Math.PI / period); return n * n; }
-  if (mode === 'blink') return tt < period / 2 ? 1 : 0;
-  if (mode === 'double') return (tt < 120 || (tt >= 240 && tt < 360)) ? 1 : 0;
-  return 0;
+// ── 页签 ──
+function showTab(name) {
+  $('tab_recipe').style.display = name === 'recipe' ? '' : 'none';
+  $('tab_bind').style.display = name === 'bind' ? '' : 'none';
+  $('tabbtn_recipe').className = name === 'recipe' ? 'on' : '';
+  $('tabbtn_bind').className = name === 'bind' ? 'on' : '';
 }
 
-function previewLoop() {
-  const el = $('ledPreview');
-  const color = $('f_color').value;
-  const mode = $('f_mode').value;
-  let period = parseInt($('f_period').value, 10);
-  if (mode === 'steady' || !period) period = 1000;
-  const level = ledLevel(mode, period, performance.now());
-  const a = 0.1 + 0.9 * level;
-  el.style.background = color;
-  el.style.opacity = (0.12 + 0.88 * level).toFixed(3);
-  el.style.boxShadow = '0 0 ' + Math.round(24 * level) + 'px ' + color;
-  requestAnimationFrame(previewLoop);
-}
-requestAnimationFrame(previewLoop);
-connectBoard();  // 自动连接：优先用上次 IP，否则从 bridge /health 取板子地址
+// ── 启动 ──
+connectBoard().then(function () {
+  loadAll();
+});
+if (location.hash === '#bind') showTab('bind');
 </script>
 </body>
 </html>
