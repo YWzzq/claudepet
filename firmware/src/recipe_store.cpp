@@ -5,7 +5,7 @@
 static const char* NS = "recipes";
 static const char* IDX_KEY = "idx";
 
-// ── 出厂预置 8 态（与 simulator 配色一致）──
+// ── 出厂预置状态（8 基础 + 8 经典表情，与 simulator 配色一致）──
 struct DefaultRecipe {
   const char* name;
   const char* color;
@@ -21,6 +21,14 @@ static const DefaultRecipe DEFAULTS[] = {
     {"waiting",  "#FFB03A", "blink",  500},
     {"done",     "#3BD692", "breath", 1200},
     {"error",    "#F04848", "blink",  300},
+    {"angry",    "#FF8C42", "blink",  700},
+    {"love",     "#FF6B9D", "breath", 1600},
+    {"cry",      "#5B8DEF", "blink",  1100},
+    {"dizzy",    "#B08BE8", "breath", 900},
+    {"cool",     "#38E0C8", "steady", 0},
+    {"shy",      "#FF9EB5", "breath", 2000},
+    {"tongue",   "#FFD93D", "double", 1600},
+    {"shock",    "#7FD4FF", "blink",  400},
 };
 static const size_t N_DEFAULTS = sizeof(DEFAULTS) / sizeof(DEFAULTS[0]);
 
@@ -94,11 +102,16 @@ bool RecipeStore::isDefault(const String& name) const {
 }
 
 void RecipeStore::seedDefaults() {
-  if (prefs().getString(IDX_KEY, "").length() > 0) return;  // 已有数据，不覆盖
+  // 增量播种：缺哪个补哪个（首次开机全部播种；固件升级新增预置态也会自动补）
+  bool added = false;
   for (size_t i = 0; i < N_DEFAULTS; i++) {
-    prefs().putString((String("st_") + DEFAULTS[i].name).c_str(), defaultJson(DEFAULTS[i]));
+    String key = String("st_") + DEFAULTS[i].name;
+    if (!prefs().isKey(key.c_str())) {
+      prefs().putString(key.c_str(), defaultJson(DEFAULTS[i]));
+      added = true;
+    }
   }
-  saveIndex();
+  if (added || prefs().getString(IDX_KEY, "").length() == 0) saveIndex();
 }
 
 void RecipeStore::saveIndex() {

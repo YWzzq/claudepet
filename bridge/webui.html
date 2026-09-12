@@ -130,6 +130,9 @@
             <option value="sleep">sleep 闭眼</option>
             <option value="happy">happy 笑眼</option>
             <option value="x">x X 眼</option>
+            <option value="heart">heart 爱心眼</option>
+            <option value="spiral">spiral 漩涡眼</option>
+            <option value="angry">angry 怒眉</option>
           </select>
         </div>
         <div class="row"><label>眼神</label>
@@ -147,6 +150,8 @@
             <option value="smile">smile 微笑</option>
             <option value="o">o 圆嘴</option>
             <option value="wave">wave 波浪</option>
+            <option value="frown">frown 皱眉</option>
+            <option value="tongue">tongue 吐舌</option>
             <option value="prompt">prompt &gt;_</option>
             <option value="question">question ?</option>
           </select>
@@ -156,6 +161,10 @@
             <option value="none">none 无</option>
             <option value="dots">dots ...</option>
             <option value="z">z</option>
+            <option value="tears">tears 泪滴</option>
+            <option value="hearts">hearts 飘心</option>
+            <option value="blush">blush 腮红</option>
+            <option value="glasses">glasses 墨镜</option>
           </select>
         </div>
         <div class="row"><label>抖动</label><input type="checkbox" id="s_shake"></div>
@@ -286,6 +295,14 @@ const SCREEN_DEFAULTS = {
   waiting: { bg: '#000000', fg: '#FFB03A', eye: 'wide',  anim: 'still', mouth: 'question',extra: 'none', shake: false },
   done:    { bg: '#000000', fg: '#3BD692', eye: 'happy', anim: 'still', mouth: 'smile',   extra: 'none', shake: false },
   error:   { bg: '#000000', fg: '#F04848', eye: 'x',     anim: 'still', mouth: 'wave',    extra: 'none', shake: true  },
+  angry:   { bg: '#000000', fg: '#FF8C42', eye: 'angry',  anim: 'still', mouth: 'frown',   extra: 'none', shake: false },
+  love:    { bg: '#000000', fg: '#FF6B9D', eye: 'heart',  anim: 'still', mouth: 'smile',   extra: 'hearts', shake: false },
+  cry:     { bg: '#000000', fg: '#5B8DEF', eye: 'sleep',  anim: 'still', mouth: 'frown',   extra: 'tears', shake: false },
+  dizzy:   { bg: '#000000', fg: '#B08BE8', eye: 'spiral', anim: 'still', mouth: 'wave',    extra: 'none', shake: false },
+  cool:    { bg: '#000000', fg: '#38E0C8', eye: 'open',   anim: 'still', mouth: 'smile',   extra: 'glasses', shake: false },
+  shy:     { bg: '#000000', fg: '#FF9EB5', eye: 'happy',  anim: 'still', mouth: 'o',       extra: 'blush', shake: false },
+  tongue:  { bg: '#000000', fg: '#FFD93D', eye: 'open',   anim: 'still', mouth: 'tongue',  extra: 'none', shake: false },
+  shock:   { bg: '#000000', fg: '#7FD4FF', eye: 'wide',   anim: 'still', mouth: 'o',       extra: 'none', shake: false },
 };
 const CUSTOM_DEFAULT = { bg: '#000000', fg: '#8C9BAB', eye: 'open', anim: 'still', mouth: 'flat', extra: 'none', shake: false };
 
@@ -567,10 +584,44 @@ function drawScreen(t) {
     sc2.moveTo(x + 11, y - 11); sc2.lineTo(x - 11, y + 11);
     sc2.stroke();
   }
+  function drawHeart(x, y, s) {
+    sc2.beginPath();
+    sc2.arc(x - s * 0.5, y - s * 0.3, s * 0.5, 0, Math.PI * 2);
+    sc2.arc(x + s * 0.5, y - s * 0.3, s * 0.5, 0, Math.PI * 2);
+    sc2.fill();
+    sc2.beginPath();
+    sc2.moveTo(x - s * 0.95, y - s * 0.02);
+    sc2.lineTo(x + s * 0.95, y - s * 0.02);
+    sc2.lineTo(x, y + s * 0.8);
+    sc2.closePath(); sc2.fill();
+  }
+  function eyeHeart(x, y) { drawHeart(x, y, 14); }
+  function eyeSpiral(x, y) {
+    sc2.beginPath();
+    for (let a = 0; a <= 720; a += 14) {
+      const rad = a * Math.PI / 180, rr = 2 + (a / 720) * 12;
+      const px = x + Math.cos(rad) * rr, py = y + Math.sin(rad) * rr;
+      if (a === 0) sc2.moveTo(px, py); else sc2.lineTo(px, py);
+    }
+    sc2.lineWidth = 3.5; sc2.stroke();
+  }
+  function browAngry(x, y, left) {
+    sc2.beginPath();
+    if (left) { sc2.moveTo(x - 12, y - 24); sc2.lineTo(x + 10, y - 15); }
+    else { sc2.moveTo(x + 12, y - 24); sc2.lineTo(x - 10, y - 15); }
+    sc2.lineWidth = 8; sc2.stroke();
+  }
 
   if (p.eye === 'sleep') { eyeArc(lx, ey, false); eyeArc(rx, ey, false); }
   else if (p.eye === 'happy') { eyeArc(lx, ey, true); eyeArc(rx, ey, true); }
   else if (p.eye === 'x') { eyeX(lx, ey); eyeX(rx, ey); }
+  else if (p.eye === 'heart') { eyeHeart(lx, ey); eyeHeart(rx, ey); }
+  else if (p.eye === 'spiral') { eyeSpiral(lx, ey); eyeSpiral(rx, ey); }
+  else if (p.eye === 'angry') {
+    if (blink) { eyeLine(lx, ey); eyeLine(rx, ey); }
+    else { eyeOpen(lx, ey, 14); eyeOpen(rx, ey, 14); }
+    browAngry(lx, ey, true); browAngry(rx, ey, false);
+  }
   else {
     const r = p.eye === 'wide' ? 16.5 : 14;
     let dx = 0, dy = 0;
@@ -595,6 +646,16 @@ function drawScreen(t) {
       sc2.quadraticCurveTo(108, my - 10, 120, my);
       sc2.quadraticCurveTo(132, my + 10, 144, my);
       sc2.stroke(); break;
+    case 'frown':
+      sc2.beginPath(); sc2.arc(120, my + 12, 16, Math.PI * 1.14, Math.PI * 1.86); sc2.stroke(); break;
+    case 'tongue':
+      sc2.beginPath(); sc2.arc(120, my - 10, 26, Math.PI * 0.12, Math.PI * 0.88); sc2.stroke();
+      sc2.fillStyle = '#FF6B9D';
+      sc2.beginPath();
+      sc2.moveTo(112, my + 2); sc2.lineTo(128, my + 2);
+      sc2.quadraticCurveTo(126, my + 16, 120, my + 16);
+      sc2.quadraticCurveTo(114, my + 16, 112, my + 2);
+      sc2.fill(); break;
     case 'prompt':
       sc2.font = 'bold 26px Menlo, monospace';
       sc2.fillText((t % 1) < 0.55 ? '> _' : '>  ', 120, my - 2); break;
@@ -615,6 +676,30 @@ function drawScreen(t) {
     sc2.font = 'bold 20px sans-serif';
     sc2.fillText('z', 196, 44);
     sc2.globalAlpha = 1;
+  } else if (p.extra === 'tears') {
+    for (let i = 0; i < 2; i++) {
+      const ex = i === 0 ? lx : rx;
+      const yy = ey + 14 + ((t * 30 + i * 22) % 45);
+      sc2.fillStyle = '#7EC8FF';
+      sc2.beginPath(); sc2.arc(ex, yy, 3.5, 0, Math.PI * 2); sc2.fill();
+    }
+  } else if (p.extra === 'hearts') {
+    for (let i = 0; i < 2; i++) {
+      const a = Math.sin(t * 1.8 + i * 2.2);
+      drawHeart(60 + i * 120, 44 - a * 8, 8 + a * 2);
+    }
+  } else if (p.extra === 'blush') {
+    sc2.fillStyle = '#F79EB5';
+    sc2.beginPath(); sc2.arc(78, 118, 7, 0, Math.PI * 2); sc2.fill();
+    sc2.beginPath(); sc2.arc(162, 118, 7, 0, Math.PI * 2); sc2.fill();
+  } else if (p.extra === 'glasses') {
+    sc2.fillStyle = '#10151C';
+    sc2.fillRect(lx - 17, ey - 11, 34, 22);
+    sc2.fillRect(rx - 17, ey - 11, 34, 22);
+    sc2.strokeStyle = p.fg; sc2.lineWidth = 3;
+    sc2.strokeRect(lx - 17, ey - 11, 34, 22);
+    sc2.strokeRect(rx - 17, ey - 11, 34, 22);
+    sc2.beginPath(); sc2.moveTo(lx + 17, ey - 6); sc2.lineTo(rx - 17, ey - 6); sc2.stroke();
   }
   sc2.restore();
 }

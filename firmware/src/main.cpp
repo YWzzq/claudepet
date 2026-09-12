@@ -49,10 +49,8 @@ void setState(const String& name, const String& source, const String& label, con
   if (!gRecipes.get(name, sr)) gRecipes.get("idle", sr);
   ledApplyRecipe(sr.led);
 
-  // 屏幕：内置 8 态走矢量表情，自定义状态显示名字（V1.1 配方化）
-  PetState face;
-  if (petStateFromName(name, face)) displaySetState(face, label);
-  else displayShowUnknown(name);
+  // 屏幕：配方参数驱动（内置表情表 + 配方 screen 覆盖）
+  displaySetStateByName(name, label, sr.raw);
 }
 
 void handleState() {
