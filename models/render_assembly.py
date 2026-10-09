@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""装配步骤可视化 V2：正面视角 + 半透明壳体（内部可见）。"""
+"""装配步骤可视化 V3.1：横置屏 + 螺丝定位。"""
 import trimesh, numpy as np
 import matplotlib
 matplotlib.use("Agg")
