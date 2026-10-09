@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V5.1 enclosure, millimetres: X=width, Y=front, Z=up.
+"""V5.2 enclosure, millimetres: X=width, Y=front, Z=up.
 Seller drawings are the source. Connector/lead dimensions remain assumptions.
 Run anywhere; outputs go beside this script. Screen installs BEFORE the board.
 """
@@ -16,7 +16,11 @@ INNER_X = W / 2 - WALL
 FLOOR, CEILING = LEG_H + WALL, H - WALL
 CLEARANCE = .30
 # Portrait PCBA 32 x 43.72; rotate with header on right, centre active area.
-SCREEN_W, SCREEN_L, PCB_T, MODULE_T = 32., 43.72, 1.2, 2.58
+SCREEN_W, SCREEN_L, PCB_T = 32., 43.72, 1.2
+# The side drawing says 2.00 mm above a 1.20 mm PCB; the seller's table says
+# 2.58 mm total. Use the larger 3.20 mm envelope, keeping the glass face fixed.
+GLASS_RISE = 2.0
+MODULE_T = PCB_T + GLASS_RISE
 AA, AA_TOP, AA_SIDE, FACE_Z = 27.72, 6.45, 2.14, 48.
 PCB_CX = -(SCREEN_L / 2 - AA_TOP - AA / 2)
 PCB_X0, PCB_X1 = PCB_CX - SCREEN_L / 2, PCB_CX + SCREEN_L / 2
@@ -28,6 +32,12 @@ WINDOW = 27.2  # Conceals glass border; masks .26 mm of active area per edge.
 SCREEN_HOLES_X = (PCB_X0 + 2.5, PCB_X1 - 2.5)
 SCREEN_HOLES_Z = (SCREEN_Z0 + 2.5, SCREEN_Z0 + SCREEN_W - 2.5)
 PILOT_R = .85
+# The user's photos show short pin ends on the glass side. This height is a
+# conservative allowance, NOT a measurement inferred from a perspective photo.
+PIN_X = PCB_X1 - 1.5
+PIN_ZS = tuple(SCREEN_Z0 + 7.11 + i * 2.54 for i in range(8))
+PIN_FRONT_HEIGHT, PIN_PAD_SIZE = 2.5, 1.8
+PIN_RELIEF_W, PIN_RELIEF_H, PIN_RELIEF_END = 5., 21.6, FRONT - 1.2
 # 53.34 = pin span; 57.15 = PCB; 2495.63 mil = antenna-inclusive envelope.
 BOARD_L, BOARD_W, BOARD_PCB_L, BOARD_T = 2495.63 * .0254, 27.94, 57.15, 1.2
 BOARD_X, BOARD_Y, BOARD_Z, PIN_BELOW, LEAD_ABOVE = 3.5, -5., 20., 2.6, 14.
@@ -83,6 +93,19 @@ def silhouette():
     return union(parts)
 
 
+def pin_relief():
+    # Blind pocket at the header row. Leaves 1.2 mm of the visible front skin.
+    start = PCB_FRONT - .02
+    return box(PIN_RELIEF_W, PIN_RELIEF_END - start, PIN_RELIEF_H,
+               PIN_X, (start + PIN_RELIEF_END) / 2, FACE_Z - PIN_RELIEF_H / 2)
+
+
+def front_pin_tips(height=PIN_FRONT_HEIGHT):
+    # Eight separate square envelopes include the short pins AND solder beads.
+    return union([box(PIN_PAD_SIZE, height, PIN_PAD_SIZE, PIN_X,
+                      PCB_FRONT + height / 2, z - PIN_PAD_SIZE / 2) for z in PIN_ZS])
+
+
 def build_shell():
     cavity = box(2 * INNER_X, D - WALL + .2, CEILING - FLOOR,
                  y=-WALL / 2 - .1, z=FLOOR)
@@ -100,7 +123,7 @@ def build_shell():
               for x in SCREEN_HOLES_X for z in SCREEN_HOLES_Z]
     pilots += [cylinder_y(x, REAR + 2.5, z, PILOT_R, 5.02)
                for x in BACK_HOLES_X for z in BACK_HOLES_Z]
-    return subtract(shell, pilots)
+    return subtract(shell, [*pilots, pin_relief()])
 
 
 def build_back():
@@ -129,7 +152,8 @@ def screen_parts():
     aa = box(AA, .04, AA, y=GLASS_FRONT + .02, z=FACE_Z - AA / 2)
     header = box(4.2, 16, 20.32, PCB_X1 - 1.5,
                  PCB_BACK - 8, SCREEN_Z0 + 5.84)
-    return dict(screen_pcb=pcb, screen_glass=glass, screen_face=aa, screen_connector=header)
+    return dict(screen_pcb=pcb, screen_glass=glass, screen_face=aa,
+                screen_connector=header, screen_pin_tips=front_pin_tips())
 
 
 def board_parts():
@@ -162,6 +186,7 @@ def screws():
 
 COLORS = dict(front='#f18329', back='#eab16e', screen_pcb='#24629b',
               screen_glass='#161c23', screen_face='#101820', screen_connector='#766496',
+              screen_pin_tips='#d9c69b',
               board_pcb='#299666', board_antenna='#183a2c', board_leads='#4a515f',
               board_radio='#b3bcc8', board_usb='#c5ced8')
 
@@ -212,6 +237,28 @@ def verify(parts):
     coupon = build_coupon()
     check('screen coupon: closed connected solid', coupon.is_volume and len(coupon.split()) == 1,
           dict(watertight=bool(coupon.is_watertight), components=len(coupon.split())))
+    pin_clearance = PIN_RELIEF_END - PCB_FRONT - PIN_FRONT_HEIGHT
+    check('side drawing larger screen thickness adopted', np.isclose(MODULE_T,3.2),
+          dict(pcb_mm=PCB_T, glass_rise_mm=GLASS_RISE,
+               adopted_total_mm=MODULE_T, conflicting_seller_table_mm=2.58))
+    check('front pin allowance has at least 0.5 mm clearance', pin_clearance >= .5,
+          dict(assumed_pin_height_mm=PIN_FRONT_HEIGHT,
+               available_height_from_pcb_mm=round(PIN_RELIEF_END-PCB_FRONT,3),
+               tip_clearance_mm=round(pin_clearance,3), measured=False))
+    check('pin relief leaves 1.2 mm front skin', FRONT-PIN_RELIEF_END >= 1.2-1e-6,
+          dict(remaining_skin_mm=round(FRONT-PIN_RELIEF_END,3)))
+    v = overlap(coupon, parts['screen_pin_tips'])
+    check('screen coupon clears front pin ends', v < 1e-3,
+          dict(intersection_mm3=round(v,6)))
+    taller_pins = front_pin_tips(PIN_FRONT_HEIGHT + .5)
+    for label, mesh in [('front', parts['front']), ('coupon', coupon)]:
+        v = overlap(mesh, taller_pins)
+        check(f'{label}: extra 0.5 mm pin height clears', v < 1e-3,
+              dict(pin_height_mm=PIN_FRONT_HEIGHT+.5, intersection_mm3=round(v,6)))
+    for k in ('screen_glass', 'screen_screw_2', 'screen_screw_3'):
+        v = overlap(parts['screen_pin_tips'], parts[k])
+        check(f'front pin ends / {k}: no collision', v < 1e-3,
+              dict(intersection_mm3=round(v,6)))
     insertion_gap = SCREEN_Z0 + 5.84 - (BOARD_Z + BOARD_T + LEAD_ABOVE)
     check('screen plugs clear board plug envelope', insertion_gap > 2,
           dict(vertical_clearance_mm=round(insertion_gap, 3),
@@ -251,10 +298,12 @@ def verify(parts):
     gusset_run = (INNER_X+.5)-(abs(BACK_HOLES_X[0])-3.6)
     check('rear post print ramp is at most 45 degrees', gusset_run/(gusset_run+.2) <= 1,
           dict(lateral_extension_mm=round(gusset_run,3), print_height_mm=round(gusset_run+.2,3)))
-    report = dict(version='V5.1', units='mm', all_geometry_checks_pass=all(c['passed'] for c in checks),
+    report = dict(version='V5.2', units='mm', all_geometry_checks_pass=all(c['passed'] for c in checks),
         checks=checks, not_verified=[
         'Seller drawings vs actual hardware dimensions; measure before final print.',
         'Actual connector heights, wire bends, adhesive and USB cable plug sizes.',
+        'Side drawing 3.2 mm total adopted over conflicting 2.58 mm table; verify on coupon.',
+        'Front short pin/solder height allowance 2.5 mm, not measured; verify on the coupon.',
         'Printer tolerance and screw fit; print the small screen coupon first.',
         'Physical strength, heat and stability under cable pull.'])
     (OUT / 'fit_report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
@@ -271,6 +320,7 @@ def build_coupon():
              for x in SCREEN_HOLES_X for z in SCREEN_HOLES_Z]
     return subtract(union([slab, *posts]), [
         box(WINDOW, 10, WINDOW, y=FRONT, z=FACE_Z - WINDOW / 2),
+        pin_relief(),
         *[cylinder_y(x, (PCB_FRONT + 23.6) / 2, z, PILOT_R, 23.6 - PCB_FRONT + .02)
           for x in SCREEN_HOLES_X for z in SCREEN_HOLES_Z]])
 
@@ -314,7 +364,7 @@ def main():
     # glTF uses Y-up; preserve upright appearance in standard GLB viewers.
     scene.apply_transform(trimesh.transformations.rotation_matrix(-np.pi / 2, [1, 0, 0]))
     scene.export(OUT / 'agentpet_assembly.glb')
-    print('Saved validated V5.1 STL, print layouts, coupon and assembled GLB.')
+    print('Saved validated V5.2 STL, print layouts, coupon and assembled GLB.')
 
 
 if __name__ == '__main__':

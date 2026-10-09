@@ -47,8 +47,29 @@ for x in B.SCREEN_HOLES_X:
         check(f'screen pilot ({x:.2f}, {z:.2f}): clear and blind',
               B.overlap(front,pilot)<1e-4 and B.overlap(front,skin)>.999*skin.volume,
               dict(remaining_front_skin_mm=.39))
+pins=B.front_pin_tips()
+coupon=meshes['screen_fit_coupon.stl'].copy()
+# Undo the saved bed orientation and translation to check the actual coupon.
+assembly_coupon=B.build_coupon()
+rot=trimesh.transformations.rotation_matrix(-np.pi/2,[1,0,0])
+raw=assembly_coupon.copy();raw.apply_transform(rot)
+coupon.apply_translation(raw.bounds[0])
+coupon.apply_transform(trimesh.transformations.rotation_matrix(np.pi/2,[1,0,0]))
+for label,m in [('saved front',front),('saved coupon',coupon)]:
+    check(label+': front pin clearance', B.overlap(m,pins)<1e-4,
+          dict(assumed_pin_height_mm=B.PIN_FRONT_HEIGHT, measured=False))
+    # Probe the full blind pocket independently, and verify its outer skin.
+    probe=B.box(B.PIN_RELIEF_W-.2,B.PIN_RELIEF_END-B.PCB_FRONT-.1,
+                B.PIN_RELIEF_H-.2,B.PIN_X,
+                (B.PIN_RELIEF_END+B.PCB_FRONT)/2,
+                B.FACE_Z-(B.PIN_RELIEF_H-.2)/2)
+    skin=B.box(B.PIN_RELIEF_W-.2,.8,B.PIN_RELIEF_H-.2,B.PIN_X,
+               B.FRONT-.6,B.FACE_Z-(B.PIN_RELIEF_H-.2)/2)
+    check(label+': blind relief and intact front skin',
+          B.overlap(m,probe)<1e-4 and B.overlap(m,skin)>.999*skin.volume,
+          dict(skin_mm=round(B.FRONT-B.PIN_RELIEF_END,3)))
 scene=trimesh.load(OUT/'agentpet_assembly.glb')
-check('GLB contains all 21 components',len(scene.geometry)==21,
+check('GLB contains all 22 components',len(scene.geometry)==22,
       dict(geometry_count=len(scene.geometry),size_mm=scene.extents.round(3).tolist()))
 for name,m in scene.geometry.items():
     if name.startswith('screen_screw'):
@@ -61,7 +82,7 @@ check('build-time geometry audit passes',geometry_report['all_geometry_checks_pa
 m=meshes['agentpet_case_front_print.stl']
 mask=(m.face_normals[:,2]<-np.sqrt(.5)-1e-6)&(m.triangles_center[:,2]>.3)
 overhang_area=float(m.area_faces[mask].sum())
-report=dict(version='V5.1',all_saved_file_checks_pass=all(c['passed'] for c in checks),
+report=dict(version='V5.2',all_saved_file_checks_pass=all(c['passed'] for c in checks),
             checks=checks,print_review=dict(
             front_downward_overhang_area_mm2=round(overhang_area,3),
             actual_slicer_run=False,

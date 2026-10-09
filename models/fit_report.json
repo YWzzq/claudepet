@@ -1,5 +1,5 @@
 {
-  "version": "V5.1",
+  "version": "V5.2",
   "units": "mm",
   "all_geometry_checks_pass": true,
   "checks": [
@@ -21,7 +21,7 @@
             74.0
           ]
         ],
-        "volume_mm3": 73668.909
+        "volume_mm3": 73574.667
       }
     },
     {
@@ -97,6 +97,77 @@
       }
     },
     {
+      "check": "side drawing larger screen thickness adopted",
+      "passed": true,
+      "evidence": {
+        "pcb_mm": 1.2,
+        "glass_rise_mm": 2.0,
+        "adopted_total_mm": 3.2,
+        "conflicting_seller_table_mm": 2.58
+      }
+    },
+    {
+      "check": "front pin allowance has at least 0.5 mm clearance",
+      "passed": true,
+      "evidence": {
+        "assumed_pin_height_mm": 2.5,
+        "available_height_from_pcb_mm": 3.8,
+        "tip_clearance_mm": 1.3,
+        "measured": false
+      }
+    },
+    {
+      "check": "pin relief leaves 1.2 mm front skin",
+      "passed": true,
+      "evidence": {
+        "remaining_skin_mm": 1.2
+      }
+    },
+    {
+      "check": "screen coupon clears front pin ends",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "front: extra 0.5 mm pin height clears",
+      "passed": true,
+      "evidence": {
+        "pin_height_mm": 3.0,
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "coupon: extra 0.5 mm pin height clears",
+      "passed": true,
+      "evidence": {
+        "pin_height_mm": 3.0,
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "front pin ends / screen_glass: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "front pin ends / screen_screw_2: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "front pin ends / screen_screw_3: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
       "check": "screen plugs clear board plug envelope",
       "passed": true,
       "evidence": {
@@ -128,6 +199,13 @@
     },
     {
       "check": "front / screen_connector: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "front / screen_pin_tips: no collision",
       "passed": true,
       "evidence": {
         "intersection_mm3": 0.0
@@ -204,6 +282,13 @@
       }
     },
     {
+      "check": "back / screen_pin_tips: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
       "check": "back / board_pcb: no collision",
       "passed": true,
       "evidence": {
@@ -267,6 +352,13 @@
       }
     },
     {
+      "check": "board_pcb / screen_pin_tips: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
       "check": "board_antenna / screen_pcb: separate hardware",
       "passed": true,
       "evidence": {
@@ -289,6 +381,13 @@
     },
     {
       "check": "board_antenna / screen_connector: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_antenna / screen_pin_tips: separate hardware",
       "passed": true,
       "evidence": {
         "intersection_mm3": 0.0
@@ -323,6 +422,13 @@
       }
     },
     {
+      "check": "board_leads / screen_pin_tips: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
       "check": "board_radio / screen_pcb: separate hardware",
       "passed": true,
       "evidence": {
@@ -351,6 +457,13 @@
       }
     },
     {
+      "check": "board_radio / screen_pin_tips: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
       "check": "board_usb / screen_pcb: separate hardware",
       "passed": true,
       "evidence": {
@@ -373,6 +486,13 @@
     },
     {
       "check": "board_usb / screen_connector: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_usb / screen_pin_tips: separate hardware",
       "passed": true,
       "evidence": {
         "intersection_mm3": 0.0
@@ -413,8 +533,8 @@
       "check": "screen 5 mm screws stay inside front wall",
       "passed": true,
       "evidence": {
-        "tip_y_mm": 23.42,
-        "remaining_skin_mm": 0.58
+        "tip_y_mm": 22.8,
+        "remaining_skin_mm": 1.2
       }
     },
     {
@@ -437,6 +557,8 @@
   "not_verified": [
     "Seller drawings vs actual hardware dimensions; measure before final print.",
     "Actual connector heights, wire bends, adhesive and USB cable plug sizes.",
+    "Side drawing 3.2 mm total adopted over conflicting 2.58 mm table; verify on coupon.",
+    "Front short pin/solder height allowance 2.5 mm, not measured; verify on the coupon.",
     "Printer tolerance and screw fit; print the small screen coupon first.",
     "Physical strength, heat and stability under cable pull."
   ]

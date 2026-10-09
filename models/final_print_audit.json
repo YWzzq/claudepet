@@ -1,5 +1,5 @@
 {
-  "version": "V5.1",
+  "version": "V5.2",
   "all_saved_file_checks_pass": true,
   "checks": [
     {
@@ -97,7 +97,7 @@
         "size_mm": [
           50.0,
           37.0,
-          4.38
+          5.0
         ]
       }
     },
@@ -207,10 +207,40 @@
       }
     },
     {
-      "check": "GLB contains all 21 components",
+      "check": "saved front: front pin clearance",
       "passed": true,
       "evidence": {
-        "geometry_count": 21,
+        "assumed_pin_height_mm": 2.5,
+        "measured": false
+      }
+    },
+    {
+      "check": "saved front: blind relief and intact front skin",
+      "passed": true,
+      "evidence": {
+        "skin_mm": 1.2
+      }
+    },
+    {
+      "check": "saved coupon: front pin clearance",
+      "passed": true,
+      "evidence": {
+        "assumed_pin_height_mm": 2.5,
+        "measured": false
+      }
+    },
+    {
+      "check": "saved coupon: blind relief and intact front skin",
+      "passed": true,
+      "evidence": {
+        "skin_mm": 1.2
+      }
+    },
+    {
+      "check": "GLB contains all 22 components",
+      "passed": true,
+      "evidence": {
+        "geometry_count": 22,
         "size_mm": [
           96.0,
           74.0,
@@ -222,35 +252,35 @@
       "check": "screen_screw_0: tip contained",
       "passed": true,
       "evidence": {
-        "tip_y_mm": 23.42
+        "tip_y_mm": 22.8
       }
     },
     {
       "check": "screen_screw_1: tip contained",
       "passed": true,
       "evidence": {
-        "tip_y_mm": 23.42
+        "tip_y_mm": 22.8
       }
     },
     {
       "check": "screen_screw_2: tip contained",
       "passed": true,
       "evidence": {
-        "tip_y_mm": 23.42
+        "tip_y_mm": 22.8
       }
     },
     {
       "check": "screen_screw_3: tip contained",
       "passed": true,
       "evidence": {
-        "tip_y_mm": 23.42
+        "tip_y_mm": 22.8
       }
     },
     {
       "check": "build-time geometry audit passes",
       "passed": true,
       "evidence": {
-        "check_count": 54
+        "check_count": 70
       }
     }
   ],
