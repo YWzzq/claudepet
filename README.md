@@ -16,6 +16,8 @@ ESP32-S3，通过 1.54" ST7789（240×240）表情屏幕和板载 RGB 灯显示�
 
 ![交互式装配预览页面（V5.1 界面示意）](models/preview_interactive.png)
 
+- [按屏幕与开发板尺寸图生成的硬件试拼预览](models/hardware_fit_preview.html)：单独看硬件，分步装屏幕、放主控、合后盖。
+- [硬件模型与试拼概览图](models/hardware_fit_overview.png)
 - [外壳与装配说明](models/README.md)
 - [打印店专用包 V5.2](models/agentpet_print_shop_v5_2.zip)：两块试装片、前后壳、打印说明和装配图。
 - [完整模型与源文件包 V5.2](models/agentpet_case_v5_2.zip)
@@ -264,6 +266,7 @@ python3 -m venv /tmp/agentpet-cad
 /tmp/agentpet-cad/bin/pip install -r models/requirements.txt
 /tmp/agentpet-cad/bin/python models/build_case.py
 /tmp/agentpet-cad/bin/python models/render_assembly.py
+/tmp/agentpet-cad/bin/python models/build_hardware_fit.py
 /tmp/agentpet-cad/bin/python models/final_print_audit.py
 /tmp/agentpet-cad/bin/python models/package_release.py
 ```

@@ -1,0 +1,208 @@
+{
+  "all_checks_pass": true,
+  "checks": [
+    {
+      "check": "front / screen_pcb",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "front / screen_glass",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "front / screen_face",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "front / screen_pins",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "front / screen_header_plastic",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "front / screen_solder",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "front / screen_dupont",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "front / board_pcb",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "front / board_antenna",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "front / board_radio",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "front / board_usb",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "front / board_pins",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "front / board_header_plastic",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "front / board_plug_space",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "back / screen_pcb",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "back / screen_glass",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "back / screen_face",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "back / screen_pins",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "back / screen_header_plastic",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "back / screen_solder",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "back / screen_dupont",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "back / board_pcb",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "back / board_antenna",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "back / board_radio",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "back / board_usb",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "back / board_pins",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "back / board_header_plastic",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "back / board_plug_space",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "screen / board",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "screen first insertion sweep",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "board second insertion sweep",
+      "passed": true,
+      "intersection_mm3": 0.0
+    },
+    {
+      "check": "back last insertion sweep",
+      "passed": true,
+      "intersection_mm3": 0.0
+    }
+  ],
+  "units": "mm",
+  "dimensions": {
+    "screen_pcb": [
+      43.72,
+      32,
+      1.2
+    ],
+    "screen_glass_rise": 2.0,
+    "screen_hole_pitch": [
+      38.72,
+      27
+    ],
+    "screen_hole_diameter": 2.0,
+    "screen_pins": 8,
+    "screen_pin_pitch": 2.54,
+    "board_pcb": [
+      57.15,
+      27.94
+    ],
+    "board_with_antenna": [
+      63.389002,
+      27.94
+    ],
+    "board_pin_row_pitch": 25.4,
+    "board_pin_length_span": 53.34,
+    "board_pins_per_row": 22
+  },
+  "clearances_mm": {
+    "glass_to_front_wall": 0.6,
+    "board_right_to_wall": 0.405,
+    "board_lower_pins_to_floor": 1.0,
+    "board_plug_to_screen_plug_z": 2.64,
+    "usb_recess": 2.805
+  },
+  "approximations": [
+    "Pin section, pad/hole diameter for board visualisation.",
+    "Board PCB thickness 1.2 mm is assumed; not specified in supplied board drawing.",
+    "USB socket shape/spacing, RF shield and antenna widths/heights are illustrative.",
+    "Dupont body geometry and cable bend are not dimensioned in the supplied drawings.",
+    "Side drawing 3.2 mm screen thickness used; seller table says 2.58 mm.",
+    "PCB contact with a mounting post is intentional; screws self-tap into pilot holes."
+  ],
+  "physical_fit_verified": false
+}

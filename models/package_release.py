@@ -16,7 +16,10 @@ FILES = [
     'screen_fit_coupon.stl', 'usb_fit_coupon.stl', 'agentpet_assembly.glb',
     'assembly_preview.html', 'assembly_viewer.template.html',
     'assembly_steps.png', 'case_preview.png', 'case_preview4.png',
-    'screen_pin_clearance.png', 'fit_report.json', 'final_print_audit.json']
+    'screen_pin_clearance.png', 'fit_report.json', 'final_print_audit.json',
+    'build_hardware_fit.py', 'screen_hardware.glb', 'esp32_s3_hardware.glb',
+    'hardware_fit_assembly.glb', 'hardware_fit_preview.html',
+    'hardware_fit_overview.png', 'hardware_fit_report.json', 'hardware_fit_browser.jpg']
 SHOP = {
     '01_screen_fit_coupon.stl': 'screen_fit_coupon.stl',
     '02_usb_fit_coupon.stl': 'usb_fit_coupon.stl',
@@ -33,9 +36,12 @@ def main():
     assert geometry['version'] == saved['version'] == VERSION
     assert geometry['all_geometry_checks_pass'] and saved['all_saved_file_checks_pass']
     assert all(c['passed'] for c in geometry['checks'] + saved['checks'])
+    hardware=json.loads((OUT/'hardware_fit_report.json').read_text())
+    assert hardware['all_checks_pass'] and all(c['passed'] for c in hardware['checks'])
     manifest = dict(version=VERSION, date='2026-10-09',
                     geometry_checks_passed=len(geometry['checks']),
                     saved_file_checks_passed=len(saved['checks']),
+                    hardware_fit_checks_passed=len(hardware['checks']),
                     actual_slicer_run=False, physical_fit_verified=False,
                     front_pin_height_upper_bound_mm=2.0, user_confirmed_pins_below_glass=True, front_pin_height_measured=False,
                     files={})

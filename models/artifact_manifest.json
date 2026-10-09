@@ -3,6 +3,7 @@
   "date": "2026-10-09",
   "geometry_checks_passed": 67,
   "saved_file_checks_passed": 33,
+  "hardware_fit_checks_passed": 32,
   "actual_slicer_run": false,
   "physical_fit_verified": false,
   "front_pin_height_upper_bound_mm": 2.0,
@@ -10,8 +11,8 @@
   "front_pin_height_measured": false,
   "files": {
     "README.md": {
-      "bytes": 8445,
-      "sha256": "482168b1c528e974ec3e1a3e7febea2df0fda637ef5403021b673480917e934c"
+      "bytes": 9727,
+      "sha256": "a780855e052631a3d6c4d4790b6f9118b3b9a6e3e0fd17a4cafe8f46258f59a7"
     },
     "print_shop_instructions.txt": {
       "bytes": 2490,
@@ -30,8 +31,8 @@
       "sha256": "3add7026083bb1bbe65829e7add437d63c910e80bbcb77d12b2416b21f18713d"
     },
     "package_release.py": {
-      "bytes": 3401,
-      "sha256": "47488f9e6658f1430c7b499545f5891a352e7b44841f9b7b86b332c9b41c7191"
+      "bytes": 3859,
+      "sha256": "ab6fc2e3946d64a1a74598d7bfbf324aee5ca07e264836d17d3aa4b6f573031d"
     },
     "requirements.txt": {
       "bytes": 81,
@@ -104,6 +105,38 @@
     "final_print_audit.json": {
       "bytes": 6115,
       "sha256": "49e4602d8f52645211b8227e5fc75970968ba037532f2b5f5a532493c3099682"
+    },
+    "build_hardware_fit.py": {
+      "bytes": 12126,
+      "sha256": "2fc26fb58f2cf7b1a3d00416aaf45c8d5100f6880fcdfaf86cfb064463fdc39b"
+    },
+    "screen_hardware.glb": {
+      "bytes": 42080,
+      "sha256": "f4fb51fdafa979a8b5688cadc221a2e5fc874135376263461d24e4e272db6873"
+    },
+    "esp32_s3_hardware.glb": {
+      "bytes": 141044,
+      "sha256": "d755168c8a963c944803c6c2e80ed1838f5f4d68af70b89339e7294b6f3ec46c"
+    },
+    "hardware_fit_assembly.glb": {
+      "bytes": 284560,
+      "sha256": "768e095f75c5dc68c6163e7ae16de683df812273381abedfba510aac63bb041c"
+    },
+    "hardware_fit_preview.html": {
+      "bytes": 623290,
+      "sha256": "ed73545407cce7dda7523d214e9300292f39551c51532027d2477d9d82c37364"
+    },
+    "hardware_fit_overview.png": {
+      "bytes": 255997,
+      "sha256": "060743d6e0dfc120c65992fabafb17be43e064118d7382ddc7a9b7c674f002fc"
+    },
+    "hardware_fit_report.json": {
+      "bytes": 4632,
+      "sha256": "afc1d728aab717c50620c3073e903f18cd21b7aa8e1b81693a0d2ac7f68d3e47"
+    },
+    "hardware_fit_browser.jpg": {
+      "bytes": 56914,
+      "sha256": "d774a8111f5c3df8f7218927bb10bcec68aba8434ac5755d85f4109374c0fe66"
     }
   }
 }

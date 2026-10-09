@@ -13,6 +13,19 @@
 - `agentpet_assembly.glb`：完整装配，包含前后壳、屏幕、主控及螺丝示意。一次打开这个文件即可看到所有零件，已经转换成 glTF 的 Y 向上坐标。
 - 两个 `*_print.stl` 是打印摆位；两个没有 `_print` 的 STL 保留装配坐标。`agentpet_case_both.stl` 是分开摆在打印床上的两件，不是粘成一体的外壳。
 
+## 硬件模型与虚拟试拼
+
+`hardware_fit_preview.html` 可以单独查看屏幕和开发板，再点击“散件 → 装屏幕 → 放主控 → 合后盖”分步试拼。`hardware_fit_overview.png` 是静态概览。
+
+- `screen_hardware.glb`：屏幕 PCB、四个安装孔、玻璃、8 针排针和杜邦母头示意。
+- `esp32_s3_hardware.glb`：开发板 PCB、天线、22 × 2 针排针及双 USB 开口示意。
+- `hardware_fit_assembly.glb`：这些硬件与当前前后壳的完整虚拟装配。
+- `hardware_fit_report.json`：硬件模型与外壳的碰撞、装入路径检查及尺寸依据。所有尺寸按毫米解释；电子件模型用于查看，不需要打印。
+
+主控排针中心距为 2.54 mm、两排跨度 25.40 mm，纵向 53.34 mm 对应 21 个间隔，即每排 22 针。PCB 外形、屏幕孔距和排针位置按提供的尺寸图；未标注的开发板 PCB 厚度（暂按 1.2 mm）、USB 外形细节、元件高度、针截面与母头厚度为示意。导线弯曲未建模。软件试拼通过仍不代表这些未标注尺寸已获得实物验证。
+
+重新生成：`python models/build_hardware_fit.py`。脚本复用 `build_case.py` 的尺寸，不修改外壳打印几何。
+
 ## 尺寸依据与修正
 
 尺寸来自本次用户附件。保留足够精度定位孔位；实物精度仍需核对。
@@ -83,6 +96,7 @@ python3 -m venv /tmp/agentpet-cad
 /tmp/agentpet-cad/bin/pip install -r models/requirements.txt
 /tmp/agentpet-cad/bin/python models/build_case.py
 /tmp/agentpet-cad/bin/python models/render_assembly.py
+/tmp/agentpet-cad/bin/python models/build_hardware_fit.py
 /tmp/agentpet-cad/bin/python models/final_print_audit.py
 /tmp/agentpet-cad/bin/python models/package_release.py
 ```
