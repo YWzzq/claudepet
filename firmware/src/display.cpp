@@ -7,6 +7,9 @@
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7789.h>
+#include <ArduinoJson.h>
+
+#define RGB565(r, g, b) ((uint16_t)((((r) >> 3) << 11) | (((g) >> 2) << 5) | ((b) >> 3)))
 
 static SPIClass lcdSPI(HSPI);
 static Adafruit_ST7789 lcd(&lcdSPI, PIN_LCD_CS, PIN_LCD_DC, PIN_LCD_RST);

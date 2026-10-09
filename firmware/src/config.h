@@ -22,8 +22,9 @@
 #define WIFI_RETRY_MS     (10 * 1000UL)   // Wi-Fi 断线重连检查间隔
 
 // ── 显示开关 ──
-// 屏幕还没到货：先关显示，状态变化走串口日志；屏幕到手改回 1 重烧即可
-#define AGENTPET_HAS_DISPLAY 0
+// 1 = 驱动 ST7789 真屏 / Wokwi 仿真屏；0 = 只打串口日志
+// （当前屏幕未接线，先开启待命；插上屏幕后按 RST 即点亮）
+#define AGENTPET_HAS_DISPLAY 1
 
 // IPS 屏颜色反转：大多数 1.54" ST7789 IPS 模块需要 1（否则黑变白）。
 // 注意：Wokwi 仿真屏强制 IPS 反转且处理方式不同，仿真用 simdemo 固件（invert=0 + rotation=0）。
