@@ -1,4 +1,4 @@
-# AgentPet V0 架构图生成脚本（python3 draw_architecture.py）
+# AgentPet 系统架构图生成脚本（python3 docs/draw_architecture.py）
 import os
 import matplotlib
 
@@ -36,8 +36,8 @@ def note(x, y, text, fs=10, color=GRAY, ha="left"):
     ax.text(x, y, text, ha=ha, va="center", fontsize=fs, color=color)
 
 # ── 标题 ─────────────────────────────────────────────
-ax.text(7, 9.62, "AgentPet V0 系统架构", ha="center", fontsize=22, fontweight="bold", color=INK)
-ax.text(7, 9.18, "PC 端 Hooks → Bridge → Wi-Fi HTTP → ESP32-S3 → ST7789 桌宠",
+ax.text(7, 9.62, "AgentPet 系统架构", ha="center", fontsize=22, fontweight="bold", color=INK)
+ax.text(7, 9.18, "PC 端 Hooks / 配置台 → Bridge → Wi-Fi HTTP → ESP32-S3 → 屏幕 / LED",
         ha="center", fontsize=11, color=GRAY)
 
 # ── PC 端容器 ────────────────────────────────────────
@@ -46,7 +46,7 @@ ax.text(0.85, 8.42, "PC 端（你的电脑）", fontsize=13, fontweight="bold", 
 
 box(1.0, 7.25, 3.4, 0.85, "#FFFFFF", "#4A78A8", "Claude Code", 13)
 box(5.0, 7.25, 3.4, 0.85, "#FFFFFF", "#4A78A8", "Codex CLI", 13)
-note(9.0, 7.68, "同一台电脑可同时跑多个会话、多个 Agent")
+note(9.0, 7.68, "多会话 / 多 Agent · 可自定义事件映射",fs=9.5)
 
 box(1.0, 5.95, 7.4, 0.85, "#DCEBFB", "#4A78A8",
     "Hooks（极小脚本 · fire-and-forget · 绝不阻塞 CLI）", 11.5)
@@ -59,7 +59,7 @@ ax.text(8.55, 6.38, "本地 HTTP\n127.0.0.1:18787", ha="center", va="center",
 box(8.9, 5.35, 4.2, 0.75, "#1E2430", "#1E2430")
 ax.text(11.0, 5.725, '{"tool":"Edit"}  →  writing', ha="center", va="center",
         fontsize=9.5, color="#E5E7EB", family="Menlo")
-note(11.0, 6.45, "hook 只发原始事件\n归一化是 bridge 的事", fs=9.5, ha="center")
+note(11.0, 6.45, "可视化配置台 /ui\n管理状态配方与事件绑定", fs=9.5, ha="center")
 
 arrow(2.7, 7.25, 2.7, 6.83)
 arrow(6.7, 7.25, 6.7, 6.83)
@@ -79,14 +79,14 @@ ax.text(0.85, 3.82, "ESP32-S3（桌面摆件 · USB-C 供电 · N16R8）",
 box(1.0, 2.55, 2.1, 0.8, "#FFFFFF", "#3F8F63", "Wi-Fi 管理", 12)
 box(3.5, 2.55, 2.4, 0.8, "#FFFFFF", "#3F8F63", "HTTP Server", 12)
 box(6.3, 2.55, 1.9, 0.8, "#FFFFFF", "#3F8F63", "状态机", 12)
-box(8.6, 2.55, 2.2, 0.8, "#FFFFFF", "#3F8F63", "动画引擎", 12)
-box(11.2, 2.55, 2.3, 0.8, "#DFF1E6", "#3F8F63", "ST7789 240×240", 12)
+box(8.6, 2.55, 2.2, 0.8, "#FFFFFF", "#3F8F63", "配方渲染", 12)
+box(11.2, 2.55, 2.3, 0.8, "#DFF1E6", "#3F8F63", "ST7789 / RGB灯", 11)
 arrow(3.1, 2.95, 3.48, 2.95); arrow(5.9, 2.95, 6.28, 2.95)
 arrow(8.2, 2.95, 8.58, 2.95); arrow(10.8, 2.95, 11.18, 2.95)
 
-note(1.0, 1.85, "GET /api/v1/health —— 当前状态 / Wi-Fi RSSI / uptime / 堆内存（调试）", fs=10)
-note(1.0, 1.42, "兜底：90 秒无更新 → 自动回 idle；done 停留 5 秒 → idle", fs=10)
-note(1.0, 0.99, "设备只懂 REST + 表情，不关心跑的是哪个 Agent（Tiny Engineer 思路）", fs=10)
+note(1.0, 1.85, "GET /api/v1/health 查询状态；GET / PUT / DELETE /api/v1/states 管理配方", fs=9.5)
+note(1.0, 1.42, "设备兜底：90 秒无更新回 idle；Bridge 仲裁 done 默认停留 5 秒", fs=9.5)
+note(1.0, 0.99, "电脑端决定事件绑定；设备端从 NVS 取配方，驱动灯光与屏幕", fs=9.5)
 box(9.3, 0.95, 3.9, 0.62, "#DFF1E6", "#3F8F63", "", 10)
 ax.text(11.25, 1.26, "agentpet.local · 端口 80", ha="center", va="center",
         fontsize=9.5, color="#2E6B47")

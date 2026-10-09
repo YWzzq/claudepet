@@ -1,9 +1,38 @@
-# AgentPet V0
+# AgentPet
 
 桌面 AI Agent 状态摆件：电脑端 Claude Code / Codex 的状态经局域网 Wi-Fi 推到
-ESP32-S3，在 1.54" ST7789（240×240）上以桌宠表情实时呈现。
+ESP32-S3，通过 1.54" ST7789（240×240）表情屏幕和板载 RGB 灯显示当前状态。
 
-架构总览见 [docs/architecture.png](docs/architecture.png)（由 `docs/draw_architecture.py` 生成）。
+支持状态配方管理、屏幕表情预览、自定义事件绑定和多会话优先级仲裁。
+当前外壳为 **V5.1 像素方块版**，已完成软件几何检查，准备进行首轮打印试装。
+
+## 当前外观与装配
+
+下图是按硬件尺寸图生成的 CAD 模型预览。屏幕显示区构成桌宠的脸，开发板放在底层，双 USB 从右侧接线，后盖可拆卸。
+
+![AgentPet V5.1 外壳模型预览](models/case_preview.png)
+
+![AgentPet V5.1 外观、内部布局、零件展开与屏幕孔位](models/assembly_steps.png)
+
+![交互式装配预览页面](models/preview_interactive.png)
+
+- [外壳与装配说明](models/README.md)
+- [打印店专用包 V5.1](models/agentpet_print_shop_v5_1.zip)：两块试装片、前后壳、打印说明和装配图。
+- [完整模型与源文件包 V5.1](models/agentpet_case_v5_1.zip)
+- [完整装配 GLB](models/agentpet_assembly.glb)：一个文件查看全部零件。
+
+下载仓库后，直接用浏览器打开 `models/assembly_preview.html`，可旋转、隐藏外壳、展开零件。
+也可在项目根目录运行 `python3 -m http.server 8776 --bind 127.0.0.1 --directory models`，
+然后访问 [本地装配预览](http://127.0.0.1:8776/assembly_preview.html)。GitHub 文件页显示 HTML 源码，需要下载或本地运行才能交互。
+
+**软件检查通过不等于实物已验证。** 建议先打印屏幕和 USB 开口试装片，确认孔位、显示区及线头配合，再打印整壳。
+
+## 系统架构
+
+电脑端判断事件对应哪个状态，硬件端根据状态配方驱动屏幕与灯光。
+事件映射保存在电脑端 `bridge/mapping.json`；状态配方保存在设备 NVS，断电保留。
+
+![AgentPet 系统架构](docs/architecture.png)
 
 ## 目录结构
 
@@ -30,7 +59,12 @@ agentpet/
 │   └── install_hooks.py     # 一键安装器（自动备份、幂等）
 ├── tools/
 │   └── virtual_device.py    # 虚拟 ESP32：终端表情脸，不插板子跑通全链路
-└── docs/
+├── models/              # V5.1 外壳、STL/GLB、装配预览、检查报告和打印包
+│   ├── build_case.py          # 尺寸与结构的唯一来源
+│   ├── render_assembly.py     # 装配图与交互预览生成器
+│   ├── final_print_audit.py   # 独立检查导出的 STL / GLB
+│   └── README.md             # 尺寸依据、装配与打印说明
+└── docs/                # 系统架构图与生成脚本
 ```
 
 ## 快速开始
@@ -111,7 +145,7 @@ AGENTPET_HOST=127.0.0.1:8080 python3 bridge/agentpet_bridge.py      # 终端 B�
 # 1) secrets.h 里 SSID 填 Wokwi-GUEST，密码留空
 # 2) 编译 + 启动仿真（二选一）：
 cd firmware && pio run
-npm i -g @wokwi/cli && wokwi-cli      # 命令行方式
+wokwi-cli                           # 命令行方式（需先安装 CLI、配置 token）
 # 或 VS Code 装 Wokwi 扩展，打开 diagram.json 点播放
 ```
 
@@ -157,10 +191,10 @@ uptime_s / wifi / rssi / heap / ip。
 ```bash
 # 列出板上全部状态
 curl http://agentpet.local/api/v1/states
-# 新增自定义状态（颜色 + 灯效 + 周期）
+# 新增自定义状态（灯光 + 屏幕）
 curl -X PUT http://agentpet.local/api/v1/states/tea \
      -H 'Content-Type: application/json' \
-     -d '{"led":{"color":"#3BC4E8","mode":"breath","period":1500}}'
+     -d '{"led":{"color":"#3BC4E8","mode":"breath","period":1500},"screen":{"color":"#3BC4E8","eye":"happy"}}'
 # 查看 / 删除
 curl http://agentpet.local/api/v1/states/tea
 curl -X DELETE http://agentpet.local/api/v1/states/tea
@@ -176,9 +210,10 @@ period 50~20000ms（steady 忽略）。预置状态可覆盖更新。
 
 bridge 跑起来后，浏览器打开 **http://localhost:18787/ui**：
 
-- 左栏：状态配方管理——列表点选、颜色拾取器、灯效下拉、周期滑杆，LED 实时预览，
-  保存直接写入板子 NVS；可新增/删除状态、一键试灯
-- 右栏：事件绑定规则编辑（mapping.json），保存即热加载
+- 状态配方：管理一份状态中的灯光与屏幕配置，可新增、编辑、删除和试播。
+- 灯光预览：颜色、灯效、周期；屏幕预览：五官、颜色及动画参数。
+- 事件绑定：编辑 `mapping.json` 的事件映射与优先级，保存即热加载。
+- 配方保存到板子 NVS；界面中的预览与试播用于检查效果，保存用于持久化。
 - 板子固件已开 CORS，网页可跨域直连板子；自动从 bridge 获取板子 IP
 
 ## 屏幕接线（交接文档第 3 节）
@@ -196,19 +231,55 @@ bridge 跑起来后，浏览器打开 **http://localhost:18787/ui**：
 避开：GPIO48（板载 RGB）、GPIO0（BOOT）、GPIO19/20（USB）、GPIO43/44（串口）、
 GPIO35/36/37（N16R8 Octal PSRAM 占用）。
 
+## 3D 打印外壳（V5.1）
+
+已按屏幕与 ESP32-S3 商品尺寸图重建像素方块外壳，包含屏幕四孔固定、主控胶垫区域、双 USB 共用出口和可拆后盖。
+V5.1 将主控向 USB 一侧移近 3.5 mm，USB 共用开口为 **32.34 × 12 mm**，接口后缩约 **2.8 mm**；后盖螺柱加入斜撑。
+
+| 项目 | 当前设计 |
+|---|---|
+| 整机最大尺寸 | 96 × 50.4 × 74 mm，不含螺丝头 |
+| 屏幕固定孔距 | 38.72 × 27 mm |
+| 屏幕窗口 | 27.2 × 27.2 mm，遮住玻璃边缘 |
+| 后盖定位边间隙 | 单边 0.30 mm |
+| 屏幕 / 后盖螺丝 | Ø2 × 5 mm / Ø2 × 6 mm，自攻，各 4 颗 |
+| 软件检查 | 54 项模型检查 + 29 项导出文件检查通过 |
+
+打印文件按顺序使用：
+
+1. [屏幕试装片](models/screen_fit_coupon.stl)与 [USB 开口试装片](models/usb_fit_coupon.stl)：先验证实物。
+2. [前壳打印文件](models/agentpet_case_front_print.stl)与 [后盖打印文件](models/agentpet_case_back_print.stl)：试装确认后，各打印一件。文件已摆位。
+
+首轮建议橙色 PLA / FDM、0.2 mm 层高、3 道壁、100% 比例。
+打印店需要检查切片预览并按需加局部支撑；不能仅凭 STL 闭合就判断免支撑。
+详见 [打印店交接说明](models/print_shop_instructions.txt)、[尺寸与装配说明](models/README.md)。
+实际打印公差、插头、线材和螺丝配合仍待试装确认。
+
+重新生成和检查模型：
+
+```bash
+python3 -m venv /tmp/agentpet-cad
+/tmp/agentpet-cad/bin/pip install -r models/requirements.txt
+/tmp/agentpet-cad/bin/python models/build_case.py
+/tmp/agentpet-cad/bin/python models/render_assembly.py
+/tmp/agentpet-cad/bin/python models/final_print_audit.py
+```
+
 ## 路线图
 
 - [x] V0.1 固件骨架：Wi-Fi + mDNS + HTTP + 状态机（编译通过）
 - [x] V0.2 浏览器 240×240 表情模拟器（8 状态黑底彩五官，动画可调）
-- [ ] V0.3 真机点亮 ST7789 —— 代码就绪（`AGENTPET_HAS_DISPLAY=1` 已实现），等板子验证 rotation / 颜色顺序
+- [x] V0.3 ST7789 显示驱动与真屏配置（`AGENTPET_HAS_DISPLAY=1`；当前旋转配置为 2）
 - [x] V0.4 固件矢量表情：与模拟器同一套参数移植为 Adafruit GFX（编译通过，真机观感待验证）
 - [x] V0.5 Python Bridge：归一化 + session 优先级仲裁 + 心跳 + mDNS 解析（16 测试通过，事件驱动即时推送）
 - [x] V0.6 Claude Code hooks：7 事件转发 + 一键安装器（沙箱安装 + 端到端验证通过）
 - [x] V0.7 Codex hooks：事件归一化 + 安装器（Codex 配置格式随版本演进，不生效时按官方文档微调 `hooks/install_hooks.py`）
-- [ ] V0.8 外壳、动画打磨、可选电池版
+- [x] V0.8 外壳 V5.1：模型、装配预览、试装片、前后壳、打印包与软件检查
+- [ ] V0.8 外壳实物打印与试装
+- [ ] 后续动画打磨、可选电池版
 - [x] V1.0 状态配方系统：配方 NVS 持久化 + GET/PUT/DELETE /states API + bridge 规则引擎（mapping.json 热加载）
-- [ ] V1.1 屏幕表情配方化（配方 screen 字段已预留）
-- [ ] V1.2 可视化配置台（bridge 自带网页 UI + 实时预览）
+- [x] V1.1 屏幕表情配方化（固件按配方 `screen` 字段驱动表情）
+- [x] V1.2 可视化配置台（配方管理、屏幕 / LED 预览、事件绑定）
 
 ## 主要参考
 

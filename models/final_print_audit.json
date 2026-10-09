@@ -1,0 +1,263 @@
+{
+  "version": "V5.1",
+  "all_saved_file_checks_pass": true,
+  "checks": [
+    {
+      "check": "agentpet_case_front.stl: valid saved mesh",
+      "passed": true,
+      "evidence": {
+        "watertight": true,
+        "components": 1,
+        "size_mm": [
+          96.0,
+          48.0,
+          74.0
+        ]
+      }
+    },
+    {
+      "check": "agentpet_case_back.stl: valid saved mesh",
+      "passed": true,
+      "evidence": {
+        "watertight": true,
+        "components": 1,
+        "size_mm": [
+          76.0,
+          4.4,
+          60.0
+        ]
+      }
+    },
+    {
+      "check": "agentpet_case_front_print.stl: valid saved mesh",
+      "passed": true,
+      "evidence": {
+        "watertight": true,
+        "components": 1,
+        "size_mm": [
+          96.0,
+          74.0,
+          48.0
+        ]
+      }
+    },
+    {
+      "check": "agentpet_case_front_print.stl: on bed",
+      "passed": true,
+      "evidence": {
+        "min_z_mm": 0.0
+      }
+    },
+    {
+      "check": "agentpet_case_back_print.stl: valid saved mesh",
+      "passed": true,
+      "evidence": {
+        "watertight": true,
+        "components": 1,
+        "size_mm": [
+          76.0,
+          60.0,
+          4.4
+        ]
+      }
+    },
+    {
+      "check": "agentpet_case_back_print.stl: on bed",
+      "passed": true,
+      "evidence": {
+        "min_z_mm": 0.0
+      }
+    },
+    {
+      "check": "agentpet_case_both.stl: valid saved mesh",
+      "passed": true,
+      "evidence": {
+        "watertight": true,
+        "components": 2,
+        "size_mm": [
+          184.0,
+          74.0,
+          48.0
+        ]
+      }
+    },
+    {
+      "check": "agentpet_case_both.stl: on bed",
+      "passed": true,
+      "evidence": {
+        "min_z_mm": 0.0
+      }
+    },
+    {
+      "check": "screen_fit_coupon.stl: valid saved mesh",
+      "passed": true,
+      "evidence": {
+        "watertight": true,
+        "components": 1,
+        "size_mm": [
+          50.0,
+          37.0,
+          4.38
+        ]
+      }
+    },
+    {
+      "check": "screen_fit_coupon.stl: on bed",
+      "passed": true,
+      "evidence": {
+        "min_z_mm": 0.0
+      }
+    },
+    {
+      "check": "usb_fit_coupon.stl: valid saved mesh",
+      "passed": true,
+      "evidence": {
+        "watertight": true,
+        "components": 1,
+        "size_mm": [
+          40.34,
+          20.0,
+          2.4
+        ]
+      }
+    },
+    {
+      "check": "usb_fit_coupon.stl: on bed",
+      "passed": true,
+      "evidence": {
+        "min_z_mm": 0.0
+      }
+    },
+    {
+      "check": "saved enclosure pair has no overlap",
+      "passed": true,
+      "evidence": {}
+    },
+    {
+      "check": "cover tolerance axis 0, shift -0.28 mm",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "cover tolerance axis 0, shift 0.28 mm",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "cover tolerance axis 2, shift -0.28 mm",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "cover tolerance axis 2, shift 0.28 mm",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "saved USB aperture is clear",
+      "passed": true,
+      "evidence": {
+        "opening_mm": [
+          32.34,
+          12.0
+        ]
+      }
+    },
+    {
+      "check": "saved face aperture is clear",
+      "passed": true,
+      "evidence": {
+        "window_mm": 27.2
+      }
+    },
+    {
+      "check": "screen pilot (-20.91, 34.50): clear and blind",
+      "passed": true,
+      "evidence": {
+        "remaining_front_skin_mm": 0.39
+      }
+    },
+    {
+      "check": "screen pilot (-20.91, 61.50): clear and blind",
+      "passed": true,
+      "evidence": {
+        "remaining_front_skin_mm": 0.39
+      }
+    },
+    {
+      "check": "screen pilot (17.81, 34.50): clear and blind",
+      "passed": true,
+      "evidence": {
+        "remaining_front_skin_mm": 0.39
+      }
+    },
+    {
+      "check": "screen pilot (17.81, 61.50): clear and blind",
+      "passed": true,
+      "evidence": {
+        "remaining_front_skin_mm": 0.39
+      }
+    },
+    {
+      "check": "GLB contains all 21 components",
+      "passed": true,
+      "evidence": {
+        "geometry_count": 21,
+        "size_mm": [
+          96.0,
+          74.0,
+          51.8
+        ]
+      }
+    },
+    {
+      "check": "screen_screw_0: tip contained",
+      "passed": true,
+      "evidence": {
+        "tip_y_mm": 23.42
+      }
+    },
+    {
+      "check": "screen_screw_1: tip contained",
+      "passed": true,
+      "evidence": {
+        "tip_y_mm": 23.42
+      }
+    },
+    {
+      "check": "screen_screw_2: tip contained",
+      "passed": true,
+      "evidence": {
+        "tip_y_mm": 23.42
+      }
+    },
+    {
+      "check": "screen_screw_3: tip contained",
+      "passed": true,
+      "evidence": {
+        "tip_y_mm": 23.42
+      }
+    },
+    {
+      "check": "build-time geometry audit passes",
+      "passed": true,
+      "evidence": {
+        "check_count": 54
+      }
+    }
+  ],
+  "print_review": {
+    "front_downward_overhang_area_mm2": 49.083,
+    "actual_slicer_run": false,
+    "instruction": "Shop must inspect sliced layers and add local supports as needed; do not limit support to build plate only."
+  },
+  "release": "Ready for first FDM/PLA test print; physical fit not yet validated."
+}

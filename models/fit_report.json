@@ -1,0 +1,443 @@
+{
+  "version": "V5.1",
+  "units": "mm",
+  "all_geometry_checks_pass": true,
+  "checks": [
+    {
+      "check": "front: closed connected solid",
+      "passed": true,
+      "evidence": {
+        "watertight": true,
+        "components": 1,
+        "bounds_mm": [
+          [
+            -48.0,
+            -24.0,
+            0.0
+          ],
+          [
+            48.0,
+            24.0,
+            74.0
+          ]
+        ],
+        "volume_mm3": 73668.909
+      }
+    },
+    {
+      "check": "back: closed connected solid",
+      "passed": true,
+      "evidence": {
+        "watertight": true,
+        "components": 1,
+        "bounds_mm": [
+          [
+            -38.0,
+            -26.4,
+            14.0
+          ],
+          [
+            38.0,
+            -22.0,
+            74.0
+          ]
+        ],
+        "volume_mm3": 11061.312
+      }
+    },
+    {
+      "check": "screen hole pitch matches drawing",
+      "passed": true,
+      "evidence": [
+        38.72,
+        27.0
+      ]
+    },
+    {
+      "check": "window stays inside active area",
+      "passed": true,
+      "evidence": {
+        "AA_mm": 27.72,
+        "window_mm": 27.2,
+        "mask_per_edge_mm": 0.2599999999999998
+      }
+    },
+    {
+      "check": "board includes antenna and fits",
+      "passed": true,
+      "evidence": {
+        "board_mm": [
+          63.389002,
+          27.94
+        ],
+        "cavity_width_mm": 71.2,
+        "side_clearances_mm": [
+          7.4054990000000025,
+          0.4054990000000025
+        ]
+      }
+    },
+    {
+      "check": "USB socket recess is reduced",
+      "passed": true,
+      "evidence": {
+        "recess_mm": 2.805,
+        "opening_mm": [
+          32.34,
+          12.0
+        ]
+      }
+    },
+    {
+      "check": "screen coupon: closed connected solid",
+      "passed": true,
+      "evidence": {
+        "watertight": true,
+        "components": 1
+      }
+    },
+    {
+      "check": "screen plugs clear board plug envelope",
+      "passed": true,
+      "evidence": {
+        "vertical_clearance_mm": 2.64,
+        "board_plug_height_above_pcb_mm": 14.0,
+        "screen_plug_depth_mm": 16
+      }
+    },
+    {
+      "check": "front / screen_pcb: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "front / screen_glass: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "front / screen_face: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "front / screen_connector: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "front / board_pcb: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "front / board_antenna: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "front / board_leads: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "front / board_radio: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "front / board_usb: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "front / back: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "back / screen_pcb: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "back / screen_glass: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "back / screen_face: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "back / screen_connector: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "back / board_pcb: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "back / board_antenna: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "back / board_leads: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "back / board_radio: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "back / board_usb: no collision",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_pcb / screen_pcb: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_pcb / screen_glass: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_pcb / screen_face: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_pcb / screen_connector: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_antenna / screen_pcb: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_antenna / screen_glass: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_antenna / screen_face: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_antenna / screen_connector: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_leads / screen_pcb: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_leads / screen_glass: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_leads / screen_face: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_leads / screen_connector: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_radio / screen_pcb: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_radio / screen_glass: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_radio / screen_face: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_radio / screen_connector: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_usb / screen_pcb: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_usb / screen_glass: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_usb / screen_face: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "board_usb / screen_connector: separate hardware",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "assembly sweep: screen first",
+      "passed": true,
+      "evidence": {
+        "sample_step_mm": 1,
+        "max_intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "assembly sweep: board second",
+      "passed": true,
+      "evidence": {
+        "sample_step_mm": 1,
+        "max_intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "assembly sweep: cover last",
+      "passed": true,
+      "evidence": {
+        "sample_step_mm": 1,
+        "max_intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "USB plug corridor is open",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "screen 5 mm screws stay inside front wall",
+      "passed": true,
+      "evidence": {
+        "tip_y_mm": 23.42,
+        "remaining_skin_mm": 0.58
+      }
+    },
+    {
+      "check": "back 6 mm screws stop inside rear posts",
+      "passed": true,
+      "evidence": {
+        "tip_y_mm": -20.4,
+        "pilot_end_y_mm": -19.0
+      }
+    },
+    {
+      "check": "rear post print ramp is at most 45 degrees",
+      "passed": true,
+      "evidence": {
+        "lateral_extension_mm": 7.2,
+        "print_height_mm": 7.4
+      }
+    }
+  ],
+  "not_verified": [
+    "Seller drawings vs actual hardware dimensions; measure before final print.",
+    "Actual connector heights, wire bends, adhesive and USB cable plug sizes.",
+    "Printer tolerance and screw fit; print the small screen coupon first.",
+    "Physical strength, heat and stability under cable pull."
+  ]
+}
