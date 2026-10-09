@@ -57,17 +57,13 @@ coupon.apply_translation(raw.bounds[0])
 coupon.apply_transform(trimesh.transformations.rotation_matrix(np.pi/2,[1,0,0]))
 for label,m in [('saved front',front),('saved coupon',coupon)]:
     check(label+': front pin clearance', B.overlap(m,pins)<1e-4,
-          dict(assumed_pin_height_mm=B.PIN_FRONT_HEIGHT, measured=False))
-    # Probe the full blind pocket independently, and verify its outer skin.
-    probe=B.box(B.PIN_RELIEF_W-.2,B.PIN_RELIEF_END-B.PCB_FRONT-.1,
-                B.PIN_RELIEF_H-.2,B.PIN_X,
-                (B.PIN_RELIEF_END+B.PCB_FRONT)/2,
-                B.FACE_Z-(B.PIN_RELIEF_H-.2)/2)
-    skin=B.box(B.PIN_RELIEF_W-.2,.8,B.PIN_RELIEF_H-.2,B.PIN_X,
-               B.FRONT-.6,B.FACE_Z-(B.PIN_RELIEF_H-.2)/2)
-    check(label+': blind relief and intact front skin',
-          B.overlap(m,probe)<1e-4 and B.overlap(m,skin)>.999*skin.volume,
-          dict(skin_mm=round(B.FRONT-B.PIN_RELIEF_END,3)))
+          dict(pin_height_upper_bound_mm=B.PIN_FRONT_HEIGHT, measured=False))
+    # Verify the saved header area has the full, uncut 2.4 mm front wall.
+    skin=B.box(3.2,B.WALL-.1,20,B.PIN_X,
+               B.FRONT-B.WALL/2,B.FACE_Z-10)
+    check(label+': full front wall at pin row',
+          B.overlap(m,skin)>.999*skin.volume,
+          dict(wall_mm=B.WALL))
 scene=trimesh.load(OUT/'agentpet_assembly.glb')
 check('GLB contains all 22 components',len(scene.geometry)==22,
       dict(geometry_count=len(scene.geometry),size_mm=scene.extents.round(3).tolist()))

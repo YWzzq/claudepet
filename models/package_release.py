@@ -24,7 +24,7 @@ SHOP = {
     '04_back.stl': 'agentpet_case_back_print.stl',
     '打印说明.txt': 'print_shop_instructions.txt',
     '装配预览.png': 'assembly_steps.png',
-    '针脚避让说明.png': 'screen_pin_clearance.png'}
+    '针脚间隙说明.png': 'screen_pin_clearance.png'}
 
 
 def main():
@@ -37,7 +37,7 @@ def main():
                     geometry_checks_passed=len(geometry['checks']),
                     saved_file_checks_passed=len(saved['checks']),
                     actual_slicer_run=False, physical_fit_verified=False,
-                    front_pin_height_allowance_mm=2.5, front_pin_height_measured=False,
+                    front_pin_height_upper_bound_mm=2.0, user_confirmed_pins_below_glass=True, front_pin_height_measured=False,
                     files={})
     for name in FILES:
         data = (OUT/name).read_bytes()

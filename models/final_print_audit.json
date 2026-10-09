@@ -210,30 +210,30 @@
       "check": "saved front: front pin clearance",
       "passed": true,
       "evidence": {
-        "assumed_pin_height_mm": 2.5,
+        "pin_height_upper_bound_mm": 2.0,
         "measured": false
       }
     },
     {
-      "check": "saved front: blind relief and intact front skin",
+      "check": "saved front: full front wall at pin row",
       "passed": true,
       "evidence": {
-        "skin_mm": 1.2
+        "wall_mm": 2.4
       }
     },
     {
       "check": "saved coupon: front pin clearance",
       "passed": true,
       "evidence": {
-        "assumed_pin_height_mm": 2.5,
+        "pin_height_upper_bound_mm": 2.0,
         "measured": false
       }
     },
     {
-      "check": "saved coupon: blind relief and intact front skin",
+      "check": "saved coupon: full front wall at pin row",
       "passed": true,
       "evidence": {
-        "skin_mm": 1.2
+        "wall_mm": 2.4
       }
     },
     {
@@ -280,7 +280,7 @@
       "check": "build-time geometry audit passes",
       "passed": true,
       "evidence": {
-        "check_count": 70
+        "check_count": 67
       }
     }
   ],

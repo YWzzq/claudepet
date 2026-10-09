@@ -93,9 +93,6 @@ ax.add_patch(Rectangle((-B.WINDOW/2,B.FACE_Z-B.WINDOW/2),B.WINDOW,B.WINDOW,color
 for x in B.SCREEN_HOLES_X:
     for z in B.SCREEN_HOLES_Z:
         ax.add_patch(Circle((x,z),1.0,color='#dce4ee'))
-ax.add_patch(Rectangle((B.PIN_X-B.PIN_RELIEF_W/2,B.FACE_Z-B.PIN_RELIEF_H/2),
-                      B.PIN_RELIEF_W,B.PIN_RELIEF_H,fill=False,
-                      edgecolor='#ffae61',linestyle='--',linewidth=1.5))
 for z in B.PIN_ZS:
     ax.add_patch(Rectangle((B.PIN_X-B.PIN_PAD_SIZE/2,z-B.PIN_PAD_SIZE/2),
                           B.PIN_PAD_SIZE,B.PIN_PAD_SIZE,color='#d9c69b'))
@@ -128,25 +125,23 @@ ax.add_patch(Rectangle((B.PCB_BACK,0),B.PCB_T,17,color='#24629b'))
 ax.add_patch(Rectangle((B.PCB_FRONT,2),B.GLASS_RISE,7,color='#303b49'))
 ax.add_patch(Rectangle((B.PCB_FRONT,12),B.PIN_FRONT_HEIGHT,1.8,color='#d9c69b'))
 ax.add_patch(Rectangle((B.FRONT-B.WALL,0),B.WALL,17,color='#f18329'))
-ax.add_patch(Rectangle((B.FRONT-B.WALL,11),B.PIN_RELIEF_END-(B.FRONT-B.WALL),4,
-                       facecolor='#19232f',edgecolor='#ffba79',linestyle='--'))
 ax.text(B.PCB_BACK+.6,16,'PCB',ha='center',color='#dce4ee')
 ax.text(B.PCB_FRONT+1,6,'玻璃',rotation=90,ha='center',va='center')
 ax.text(B.FRONT-.6,8,'前壳',rotation=90,ha='center',va='center',color='#1c242d')
-ax.text(B.PCB_FRONT,14.4,'短针脚 / 焊点：按 2.5 mm 包络',fontsize=11)
+ax.text(B.PCB_FRONT,14.4,'短针脚 / 焊点：上限按玻璃高 2.0 mm',fontsize=11)
 def dim(left,right,y,label):
     ax.annotate('',xy=(left,y),xytext=(right,y),
                 arrowprops=dict(arrowstyle='<->',color='#e9edf4'))
     ax.text((left+right)/2,y+.45,label,ha='center',fontsize=11)
-dim(B.PCB_FRONT+B.PIN_FRONT_HEIGHT,B.PIN_RELIEF_END,10,'余量 1.3 mm')
-dim(B.PCB_FRONT,B.PIN_RELIEF_END,19,'针脚可用高度 3.8 mm')
+dim(B.PCB_FRONT+B.PIN_FRONT_HEIGHT,B.FRONT-B.WALL,10,'余量 0.6 mm')
+dim(B.PCB_FRONT,B.FRONT-B.WALL,19,'现有可用高度 2.6 mm')
 dim(B.PCB_BACK,B.GLASS_FRONT,-2,'屏幕总厚 3.2 mm')
 ax.text(B.PCB_FRONT,1,'玻璃高 2.0 mm · PCB 厚 1.2 mm',fontsize=10)
-ax.text(B.PIN_RELIEF_END+.6,18,'槽底外侧\n保留 1.2 mm',ha='center',fontsize=10)
+ax.text(B.FRONT-B.WALL/2,18,'前壁厚度\n2.4 mm',ha='center',fontsize=10)
 ax.set_xlim(B.PCB_BACK-1,B.FRONT+1);ax.set_ylim(-4,21)
 ax.set_aspect(.25);ax.axis('off')
-ax.set_title('V5.2 · 玻璃面短针脚避让（局部剖面示意）',fontsize=17,pad=15)
-fig.text(.5,.035,'玻璃与针脚位于 PCB 不同区域；针脚 2.5 mm 为预留值，需用实物试装片确认。',
+ax.set_title('V5.2 · 玻璃与短针脚间隙（局部剖面示意）',fontsize=17,pad=15)
+fig.text(.5,.035,'用户确认针脚低于玻璃面；按玻璃高度核对，共用已有 0.6 mm 间隙。',
          ha='center',color='#aab8c9',fontsize=10)
 fig.subplots_adjust(left=.06,right=.96,top=.86,bottom=.12)
 fig.savefig(B.OUT/'screen_pin_clearance.png')

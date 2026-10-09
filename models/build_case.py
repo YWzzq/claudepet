@@ -32,12 +32,11 @@ WINDOW = 27.2  # Conceals glass border; masks .26 mm of active area per edge.
 SCREEN_HOLES_X = (PCB_X0 + 2.5, PCB_X1 - 2.5)
 SCREEN_HOLES_Z = (SCREEN_Z0 + 2.5, SCREEN_Z0 + SCREEN_W - 2.5)
 PILOT_R = .85
-# The user's photos show short pin ends on the glass side. This height is a
-# conservative allowance, NOT a measurement inferred from a perspective photo.
+# User inspected the hardware and confirmed front pins below the glass face.
+# Use the glass rise as their upper bound; retain the existing face clearance.
 PIN_X = PCB_X1 - 1.5
 PIN_ZS = tuple(SCREEN_Z0 + 7.11 + i * 2.54 for i in range(8))
-PIN_FRONT_HEIGHT, PIN_PAD_SIZE = 2.5, 1.8
-PIN_RELIEF_W, PIN_RELIEF_H, PIN_RELIEF_END = 5., 21.6, FRONT - 1.2
+PIN_FRONT_HEIGHT, PIN_PAD_SIZE = GLASS_RISE, 1.8
 # 53.34 = pin span; 57.15 = PCB; 2495.63 mil = antenna-inclusive envelope.
 BOARD_L, BOARD_W, BOARD_PCB_L, BOARD_T = 2495.63 * .0254, 27.94, 57.15, 1.2
 BOARD_X, BOARD_Y, BOARD_Z, PIN_BELOW, LEAD_ABOVE = 3.5, -5., 20., 2.6, 14.
@@ -93,13 +92,6 @@ def silhouette():
     return union(parts)
 
 
-def pin_relief():
-    # Blind pocket at the header row. Leaves 1.2 mm of the visible front skin.
-    start = PCB_FRONT - .02
-    return box(PIN_RELIEF_W, PIN_RELIEF_END - start, PIN_RELIEF_H,
-               PIN_X, (start + PIN_RELIEF_END) / 2, FACE_Z - PIN_RELIEF_H / 2)
-
-
 def front_pin_tips(height=PIN_FRONT_HEIGHT):
     # Eight separate square envelopes include the short pins AND solder beads.
     return union([box(PIN_PAD_SIZE, height, PIN_PAD_SIZE, PIN_X,
@@ -123,7 +115,7 @@ def build_shell():
               for x in SCREEN_HOLES_X for z in SCREEN_HOLES_Z]
     pilots += [cylinder_y(x, REAR + 2.5, z, PILOT_R, 5.02)
                for x in BACK_HOLES_X for z in BACK_HOLES_Z]
-    return subtract(shell, [*pilots, pin_relief()])
+    return subtract(shell, pilots)
 
 
 def build_back():
@@ -237,24 +229,18 @@ def verify(parts):
     coupon = build_coupon()
     check('screen coupon: closed connected solid', coupon.is_volume and len(coupon.split()) == 1,
           dict(watertight=bool(coupon.is_watertight), components=len(coupon.split())))
-    pin_clearance = PIN_RELIEF_END - PCB_FRONT - PIN_FRONT_HEIGHT
+    pin_clearance = FRONT - WALL - PCB_FRONT - PIN_FRONT_HEIGHT
     check('side drawing larger screen thickness adopted', np.isclose(MODULE_T,3.2),
           dict(pcb_mm=PCB_T, glass_rise_mm=GLASS_RISE,
                adopted_total_mm=MODULE_T, conflicting_seller_table_mm=2.58))
     check('front pin allowance has at least 0.5 mm clearance', pin_clearance >= .5,
-          dict(assumed_pin_height_mm=PIN_FRONT_HEIGHT,
-               available_height_from_pcb_mm=round(PIN_RELIEF_END-PCB_FRONT,3),
-               tip_clearance_mm=round(pin_clearance,3), measured=False))
-    check('pin relief leaves 1.2 mm front skin', FRONT-PIN_RELIEF_END >= 1.2-1e-6,
-          dict(remaining_skin_mm=round(FRONT-PIN_RELIEF_END,3)))
+          dict(pin_height_upper_bound_mm=PIN_FRONT_HEIGHT,
+               available_height_from_pcb_mm=round(FRONT-WALL-PCB_FRONT,3),
+               tip_clearance_mm=round(pin_clearance,3),
+               user_confirmed_below_glass=True, measured=False))
     v = overlap(coupon, parts['screen_pin_tips'])
     check('screen coupon clears front pin ends', v < 1e-3,
           dict(intersection_mm3=round(v,6)))
-    taller_pins = front_pin_tips(PIN_FRONT_HEIGHT + .5)
-    for label, mesh in [('front', parts['front']), ('coupon', coupon)]:
-        v = overlap(mesh, taller_pins)
-        check(f'{label}: extra 0.5 mm pin height clears', v < 1e-3,
-              dict(pin_height_mm=PIN_FRONT_HEIGHT+.5, intersection_mm3=round(v,6)))
     for k in ('screen_glass', 'screen_screw_2', 'screen_screw_3'):
         v = overlap(parts['screen_pin_tips'], parts[k])
         check(f'front pin ends / {k}: no collision', v < 1e-3,
@@ -303,7 +289,7 @@ def verify(parts):
         'Seller drawings vs actual hardware dimensions; measure before final print.',
         'Actual connector heights, wire bends, adhesive and USB cable plug sizes.',
         'Side drawing 3.2 mm total adopted over conflicting 2.58 mm table; verify on coupon.',
-        'Front short pin/solder height allowance 2.5 mm, not measured; verify on the coupon.',
+        'User confirms front pins below glass; 2.0 mm glass height used as upper bound.',
         'Printer tolerance and screw fit; print the small screen coupon first.',
         'Physical strength, heat and stability under cable pull.'])
     (OUT / 'fit_report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n')
@@ -320,7 +306,6 @@ def build_coupon():
              for x in SCREEN_HOLES_X for z in SCREEN_HOLES_Z]
     return subtract(union([slab, *posts]), [
         box(WINDOW, 10, WINDOW, y=FRONT, z=FACE_Z - WINDOW / 2),
-        pin_relief(),
         *[cylinder_y(x, (PCB_FRONT + 23.6) / 2, z, PILOT_R, 23.6 - PCB_FRONT + .02)
           for x in SCREEN_HOLES_X for z in SCREEN_HOLES_Z]])
 
