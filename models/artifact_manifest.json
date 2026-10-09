@@ -107,8 +107,8 @@
       "sha256": "49e4602d8f52645211b8227e5fc75970968ba037532f2b5f5a532493c3099682"
     },
     "build_hardware_fit.py": {
-      "bytes": 12126,
-      "sha256": "2fc26fb58f2cf7b1a3d00416aaf45c8d5100f6880fcdfaf86cfb064463fdc39b"
+      "bytes": 12360,
+      "sha256": "c6c88ad54168b6e3b14dd2899b5217f0ae70d6f0a39910d716d1e6bcecadc2cb"
     },
     "screen_hardware.glb": {
       "bytes": 42080,
@@ -123,8 +123,8 @@
       "sha256": "768e095f75c5dc68c6163e7ae16de683df812273381abedfba510aac63bb041c"
     },
     "hardware_fit_preview.html": {
-      "bytes": 623290,
-      "sha256": "ed73545407cce7dda7523d214e9300292f39551c51532027d2477d9d82c37364"
+      "bytes": 623305,
+      "sha256": "07e23b1c1c119c4bb622bfbaf2a5ec3aaef07e8de19e037e46ed6b761bbb15f7"
     },
     "hardware_fit_overview.png": {
       "bytes": 255997,
@@ -135,8 +135,8 @@
       "sha256": "afc1d728aab717c50620c3073e903f18cd21b7aa8e1b81693a0d2ac7f68d3e47"
     },
     "hardware_fit_browser.jpg": {
-      "bytes": 56914,
-      "sha256": "d774a8111f5c3df8f7218927bb10bcec68aba8434ac5755d85f4109374c0fe66"
+      "bytes": 97307,
+      "sha256": "0f3e569b0a2e44671f542ae0726739c376c133998a0cdc72872487891af0b1f1"
     }
   }
 }

@@ -120,6 +120,9 @@ def audit(parts,screen,board):
 
 def preview(parts,colors,report):
     template=(OUT/'assembly_viewer.template.html').read_text()
+    # Keep the model inside the viewport even with the extra fit controls.
+    template=template.replace('.stage{position:relative;flex:1;min-height:540px;',
+        '.stage{position:relative;flex:none;height:65vh;min-height:450px;')
     template=template.replace('V5.2 装配预览','硬件尺寸与试拼').replace('方块桌宠 · 装配预览','屏幕与主控 · 虚拟试拼')
     template=template.replace('把屏幕、主控与外壳放在同一个模型里。拖动查看位置，展开查看每个零件。',
         '按你提供的尺寸图生成：屏幕四孔、8 针排针、主控 22 × 2 针排针与双 USB。可分步试拼。')
