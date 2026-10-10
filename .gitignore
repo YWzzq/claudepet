@@ -10,5 +10,5 @@ firmware/src/secrets.h
 .DS_Store
 __pycache__/
 
-# 旧版打印包保留在本地，发布使用 V5.2
+# 旧版打印包保留在本地，发布使用 V5.3
 models/agentpet_case_v5.zip

@@ -1,5 +1,5 @@
 {
-  "version": "V5.2",
+  "version": "V5.3",
   "units": "mm",
   "all_geometry_checks_pass": true,
   "checks": [
@@ -42,7 +42,37 @@
             74.0
           ]
         ],
-        "volume_mm3": 11061.312
+        "volume_mm3": 11039.088
+      }
+    },
+    {
+      "check": "rear lip has four blunt segments without tiny corner islands",
+      "passed": true,
+      "evidence": {
+        "segment_footprints_mm": [
+          [
+            70.6,
+            19.3
+          ],
+          [
+            1.4,
+            19.5
+          ],
+          [
+            57.0,
+            1.4
+          ],
+          [
+            1.4,
+            19.5
+          ]
+        ],
+        "lip_width_mm": 1.4,
+        "post_keepout_mm": [
+          8,
+          8
+        ],
+        "clearance_per_edge_mm": 0.3
       }
     },
     {

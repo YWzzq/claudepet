@@ -1,4 +1,4 @@
-// V5.2 viewer, mm. Dimension source: build_case.py; run it to regenerate meshes.
+// V5.3 viewer, mm. Dimension source: build_case.py; run it to regenerate meshes.
 // part = "layout" | "assembly" | "front" | "back" | "coupon".
 part = "layout";
 if (part == "layout") import("agentpet_case_both.stl");

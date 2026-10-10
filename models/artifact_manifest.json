@@ -1,8 +1,8 @@
 {
-  "version": "V5.2",
-  "date": "2026-10-09",
-  "geometry_checks_passed": 67,
-  "saved_file_checks_passed": 33,
+  "version": "V5.3",
+  "date": "2026-10-10",
+  "geometry_checks_passed": 68,
+  "saved_file_checks_passed": 39,
   "hardware_fit_checks_passed": 32,
   "actual_slicer_run": false,
   "physical_fit_verified": false,
@@ -11,28 +11,28 @@
   "front_pin_height_measured": false,
   "files": {
     "README.md": {
-      "bytes": 9727,
-      "sha256": "a780855e052631a3d6c4d4790b6f9118b3b9a6e3e0fd17a4cafe8f46258f59a7"
+      "bytes": 10434,
+      "sha256": "873c14c81fa744f63e1aea2b58e225b3125263fe61b0f9042a794490cf09a33d"
     },
     "print_shop_instructions.txt": {
-      "bytes": 2490,
-      "sha256": "0b073f8a0e5caa70c006c89aacf017a9b60e08f69c2276099413eae50e731ce6"
+      "bytes": 2955,
+      "sha256": "6e736ad6f2d092115979e05f09b4ee9fb16da23c4bdc2b2fe63ac96d7c29f7f6"
     },
     "build_case.py": {
-      "bytes": 17434,
-      "sha256": "48fdf9288afab24e3896da8bbeac3a4e40b14ed06670018c09ff398fb8ee3d1d"
+      "bytes": 18190,
+      "sha256": "a4bc0cdd9265cab33fd8f927a58fac91b531c68c0f47a81f36d5ad126a509763"
     },
     "render_assembly.py": {
-      "bytes": 8067,
-      "sha256": "aa310cd010dc6accb56bfa2a50b77be02bd39149b4a8cdffdc9ca74b7a2a2476"
+      "bytes": 10450,
+      "sha256": "4e5efef51affd3f0adbff6cb8a550fb7fe387ec5026979c4532de69008b2f042"
     },
     "final_print_audit.py": {
-      "bytes": 4883,
-      "sha256": "3add7026083bb1bbe65829e7add437d63c910e80bbcb77d12b2416b21f18713d"
+      "bytes": 5762,
+      "sha256": "fd3e923c50627ea9b3b78d775210a4cc07e67b585cdca4d007601664f4a95ef4"
     },
     "package_release.py": {
-      "bytes": 3859,
-      "sha256": "ab6fc2e3946d64a1a74598d7bfbf324aee5ca07e264836d17d3aa4b6f573031d"
+      "bytes": 4012,
+      "sha256": "55aa3261e4ebfef840e0ddc125b58f53c53126948fc54730d912af96c65a9e5c"
     },
     "requirements.txt": {
       "bytes": 81,
@@ -40,27 +40,31 @@
     },
     "agentpet_case.scad": {
       "bytes": 576,
-      "sha256": "12c3f22441c54fd11bfffdc896ad53351899e3d548bc997f9bdc52df61b72612"
+      "sha256": "57200debbf5997839776f02d44dc8d5535c2fb519eec159f87c08a09e23eab85"
     },
     "agentpet_case_front.stl": {
       "bytes": 116284,
       "sha256": "8c6a16aa612f4d9f5c4800564506c0aaf10979dab22f9af6346f1d780bdd4153"
     },
     "agentpet_case_back.stl": {
-      "bytes": 41684,
-      "sha256": "865805188f01c675c1c208da691f9824116f4497b5d505d3bb071bffd54264e1"
+      "bytes": 36084,
+      "sha256": "2320bda33341882b62b691983bfb15f4e3d42d794cd6fd432084e442e94e50ea"
     },
     "agentpet_case_front_print.stl": {
       "bytes": 116284,
       "sha256": "7bbee5b58ad4530d118c01f4456b2a18bed4c2755b115a1f4b490ee823125948"
     },
     "agentpet_case_back_print.stl": {
-      "bytes": 41684,
-      "sha256": "c734342cbfa45f56b57b4cd97050b0eed84ea0304e4160e5430b4587a04320cd"
+      "bytes": 36084,
+      "sha256": "25202578e4c270505ba2ea4e78d00683ab29d1b178d4eba093ebede6de1e4f8c"
+    },
+    "agentpet_case_back_v5_3_print.stl": {
+      "bytes": 36084,
+      "sha256": "25202578e4c270505ba2ea4e78d00683ab29d1b178d4eba093ebede6de1e4f8c"
     },
     "agentpet_case_both.stl": {
-      "bytes": 157884,
-      "sha256": "265f547df2ef8153b72019633c02276a684f438e33a999070c996b0e9159e9ba"
+      "bytes": 152284,
+      "sha256": "741e91857c54ef06ed77f72ffcee846c25981e344c67fc00697ace407ef5dde4"
     },
     "screen_fit_coupon.stl": {
       "bytes": 53384,
@@ -71,44 +75,48 @@
       "sha256": "5a69aa1db533ca9b818fe0d058e30e39e6fa4a349eae125be1fb621d8df0f3af"
     },
     "agentpet_assembly.glb": {
-      "bytes": 124948,
-      "sha256": "2601e39ad36fa7be63d49b24930e99a1497c13e633f106937674a49d6c259510"
+      "bytes": 122708,
+      "sha256": "081a8945608f69116b7f6daa6d111907f62499e04e76f2cc7ecb0369b581e1fb"
     },
     "assembly_preview.html": {
-      "bytes": 265703,
-      "sha256": "f9142a1331f9ff39a8e908c80eabaa1a5eeab01f7631de13be60359497094efc"
+      "bytes": 260841,
+      "sha256": "ddaa47f3c14eab2d2d0babb34b33331fc4549189b19b5ede4d440f2d842cacd2"
     },
     "assembly_viewer.template.html": {
-      "bytes": 14522,
-      "sha256": "012eb5b48e4470cb55b528886b6f6468fa7917761372101828617ef41f993b30"
+      "bytes": 14688,
+      "sha256": "815920795419a2bed0e795f06051f832e9ac9a77e3362e8f3b0a450d9c89c708"
     },
     "assembly_steps.png": {
-      "bytes": 199152,
-      "sha256": "3db2f0b62182ce64226534d309096282b85183743f4bf8f7e32d9e38eb606439"
+      "bytes": 198927,
+      "sha256": "d6069712c4c0c73c690ec3f5f5efdeb8bbc2ebfa8f23d30e3cd8a57f4b715cf2"
     },
     "case_preview.png": {
-      "bytes": 53805,
-      "sha256": "c832632aee7c81f235adfbdecbba3fbaf4959fe16e7875b141e4ccdaa9f13a2d"
+      "bytes": 53927,
+      "sha256": "c548ac5f12238ddda7ef437dff8400dea4762ef2ca38d3da3c01bf4aa715f044"
     },
     "case_preview4.png": {
-      "bytes": 199152,
-      "sha256": "3db2f0b62182ce64226534d309096282b85183743f4bf8f7e32d9e38eb606439"
+      "bytes": 198927,
+      "sha256": "d6069712c4c0c73c690ec3f5f5efdeb8bbc2ebfa8f23d30e3cd8a57f4b715cf2"
     },
     "screen_pin_clearance.png": {
-      "bytes": 87637,
-      "sha256": "f058a2f265f901728684beed1d1090a9cd675e18a99002f28d667cfecd44430c"
+      "bytes": 87742,
+      "sha256": "147b517963c490a97c76db315555557f94a5b36111c517bf8ac57b6d17357223"
+    },
+    "rear_lip_revision.png": {
+      "bytes": 114903,
+      "sha256": "8d3345e2b12e3ab812e00bcfa8c90018deb0d1de0843941666a3496df31f6fdb"
     },
     "fit_report.json": {
-      "bytes": 12145,
-      "sha256": "92de8a7a4a396b7785713f33ba4744d94ad77481735c3ebda822b7dee4cf3ba3"
+      "bytes": 12700,
+      "sha256": "1908ab439b14833d5b40639597f7d8ad50d80bcc4372a3f2d6b43bae3b12133b"
     },
     "final_print_audit.json": {
-      "bytes": 6115,
-      "sha256": "49e4602d8f52645211b8227e5fc75970968ba037532f2b5f5a532493c3099682"
+      "bytes": 7390,
+      "sha256": "2b67130b43bec9e04bc8f8506216756c9aff8d97be5bdae6655162b058d712c9"
     },
     "build_hardware_fit.py": {
       "bytes": 12360,
-      "sha256": "c6c88ad54168b6e3b14dd2899b5217f0ae70d6f0a39910d716d1e6bcecadc2cb"
+      "sha256": "3380cdd7bb647d617000e1684c4f89669710ddec114531d4a36ede152a77292b"
     },
     "screen_hardware.glb": {
       "bytes": 42080,
@@ -119,24 +127,28 @@
       "sha256": "d755168c8a963c944803c6c2e80ed1838f5f4d68af70b89339e7294b6f3ec46c"
     },
     "hardware_fit_assembly.glb": {
-      "bytes": 284560,
-      "sha256": "768e095f75c5dc68c6163e7ae16de683df812273381abedfba510aac63bb041c"
+      "bytes": 282316,
+      "sha256": "71b2b24aee8c4b3e4f0f851501c977e9e1ef3b130c5b89a5fda089b8cca24282"
     },
     "hardware_fit_preview.html": {
-      "bytes": 623305,
-      "sha256": "07e23b1c1c119c4bb622bfbaf2a5ec3aaef07e8de19e037e46ed6b761bbb15f7"
+      "bytes": 618443,
+      "sha256": "769643204b0ef8a721c40b16fb5889a05090c283acf3577d759e9984d8cbe7e3"
     },
     "hardware_fit_overview.png": {
-      "bytes": 255997,
-      "sha256": "060743d6e0dfc120c65992fabafb17be43e064118d7382ddc7a9b7c674f002fc"
+      "bytes": 255729,
+      "sha256": "c8658ef6bbe7bd9220875130daae95f14c778f32851cf2e79a4fd26ecd27c896"
     },
     "hardware_fit_report.json": {
       "bytes": 4632,
       "sha256": "afc1d728aab717c50620c3073e903f18cd21b7aa8e1b81693a0d2ac7f68d3e47"
     },
     "hardware_fit_browser.jpg": {
-      "bytes": 97307,
-      "sha256": "0f3e569b0a2e44671f542ae0726739c376c133998a0cdc72872487891af0b1f1"
+      "bytes": 98367,
+      "sha256": "dcbb8ef9deeeb6c6faabb26296eae0641a5b9807235051cefc2af62bc2773e80"
+    },
+    "rear_lip_browser.jpg": {
+      "bytes": 46389,
+      "sha256": "ff1c973b37faa98006c74520bf9d95b65a0a373a9ba77a17be30c4540ad79b2a"
     }
   }
 }

@@ -1,33 +1,35 @@
 #!/usr/bin/env python3
-"""Package the checked V5.2 models; keep older archives untouched."""
+"""Package the checked V5.3 models; keep older archives untouched."""
 from pathlib import Path
 import hashlib
 import json
 from zipfile import ZIP_DEFLATED, ZipFile
 
 OUT = Path(__file__).resolve().parent
-VERSION, TAG = 'V5.2', 'v5_2'
+VERSION, TAG = 'V5.3', 'v5_3'
 FILES = [
     'README.md', 'print_shop_instructions.txt', 'build_case.py',
     'render_assembly.py', 'final_print_audit.py', 'package_release.py',
     'requirements.txt', 'agentpet_case.scad', 'agentpet_case_front.stl',
     'agentpet_case_back.stl', 'agentpet_case_front_print.stl',
-    'agentpet_case_back_print.stl', 'agentpet_case_both.stl',
+    'agentpet_case_back_print.stl', 'agentpet_case_back_v5_3_print.stl', 'agentpet_case_both.stl',
     'screen_fit_coupon.stl', 'usb_fit_coupon.stl', 'agentpet_assembly.glb',
     'assembly_preview.html', 'assembly_viewer.template.html',
     'assembly_steps.png', 'case_preview.png', 'case_preview4.png',
-    'screen_pin_clearance.png', 'fit_report.json', 'final_print_audit.json',
+    'screen_pin_clearance.png', 'rear_lip_revision.png', 'fit_report.json', 'final_print_audit.json',
     'build_hardware_fit.py', 'screen_hardware.glb', 'esp32_s3_hardware.glb',
     'hardware_fit_assembly.glb', 'hardware_fit_preview.html',
-    'hardware_fit_overview.png', 'hardware_fit_report.json', 'hardware_fit_browser.jpg']
+    'hardware_fit_overview.png', 'hardware_fit_report.json', 'hardware_fit_browser.jpg',
+    'rear_lip_browser.jpg']
 SHOP = {
     '01_screen_fit_coupon.stl': 'screen_fit_coupon.stl',
     '02_usb_fit_coupon.stl': 'usb_fit_coupon.stl',
     '03_front.stl': 'agentpet_case_front_print.stl',
-    '04_back.stl': 'agentpet_case_back_print.stl',
+    '04_back.stl': 'agentpet_case_back_v5_3_print.stl',
     '打印说明.txt': 'print_shop_instructions.txt',
     '装配预览.png': 'assembly_steps.png',
-    '针脚间隙说明.png': 'screen_pin_clearance.png'}
+    '针脚间隙说明.png': 'screen_pin_clearance.png',
+    '后盖定位边修正.png': 'rear_lip_revision.png'}
 
 
 def main():
@@ -38,7 +40,7 @@ def main():
     assert all(c['passed'] for c in geometry['checks'] + saved['checks'])
     hardware=json.loads((OUT/'hardware_fit_report.json').read_text())
     assert hardware['all_checks_pass'] and all(c['passed'] for c in hardware['checks'])
-    manifest = dict(version=VERSION, date='2026-10-09',
+    manifest = dict(version=VERSION, date='2026-10-10',
                     geometry_checks_passed=len(geometry['checks']),
                     saved_file_checks_passed=len(saved['checks']),
                     hardware_fit_checks_passed=len(hardware['checks']),

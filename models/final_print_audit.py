@@ -13,7 +13,8 @@ def check(name, passed, evidence):
 
 names=['agentpet_case_front.stl','agentpet_case_back.stl',
        'agentpet_case_front_print.stl','agentpet_case_back_print.stl',
-       'agentpet_case_both.stl','screen_fit_coupon.stl','usb_fit_coupon.stl']
+       'agentpet_case_both.stl','screen_fit_coupon.stl','usb_fit_coupon.stl',
+       'agentpet_case_back_v5_3_print.stl']
 meshes={name:trimesh.load_mesh(OUT/name) for name in names}
 for name,m in meshes.items():
     count=len(m.split())
@@ -25,6 +26,21 @@ for name,m in meshes.items():
         check(name+': on bed', abs(m.bounds[0,2])<1e-5,
               dict(min_z_mm=float(m.bounds[0,2])))
 front=meshes['agentpet_case_front.stl']; back=meshes['agentpet_case_back.stl']
+lip_slice=trimesh.boolean.intersection([back,B.box(80,1,70,y=B.REAR+1,z=10)],
+                                     engine='manifold')
+lip_segments=lip_slice.split()
+lip_sizes=[m.extents[[0,2]].round(4).tolist() for m in lip_segments]
+check('saved rear lip: four segments, minimum footprint dimension 1.4 mm',
+      len(lip_segments)==4 and min(min(s) for s in lip_sizes)>=B.LIP_T-1e-4,
+      dict(segment_footprints_mm=lip_sizes))
+for side in (-1,1):
+    probe=B.box(1.2,1,.7,x=side*34.65,y=B.REAR+1,z=70.5)
+    v=B.overlap(back,probe)
+    check(f'saved rear lip: corner island {side} removed',v<1e-4,
+          dict(intersection_mm3=round(v,6)))
+check('versioned rear print STL matches current rear print STL',
+      (OUT/'agentpet_case_back_v5_3_print.stl').read_bytes()==
+      (OUT/'agentpet_case_back_print.stl').read_bytes(),{})
 check('saved enclosure pair has no overlap',B.overlap(front,back)<1e-4,{})
 for axis in (0,2):
     for delta in (-.28,.28):
@@ -78,7 +94,7 @@ check('build-time geometry audit passes',geometry_report['all_geometry_checks_pa
 m=meshes['agentpet_case_front_print.stl']
 mask=(m.face_normals[:,2]<-np.sqrt(.5)-1e-6)&(m.triangles_center[:,2]>.3)
 overhang_area=float(m.area_faces[mask].sum())
-report=dict(version='V5.2',all_saved_file_checks_pass=all(c['passed'] for c in checks),
+report=dict(version='V5.3',all_saved_file_checks_pass=all(c['passed'] for c in checks),
             checks=checks,print_review=dict(
             front_downward_overhang_area_mm2=round(overhang_area,3),
             actual_slicer_run=False,

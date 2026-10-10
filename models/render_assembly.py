@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate V5.2 static and interactive previews from the actual CAD meshes."""
+"""Generate V5.3 static and interactive previews from the actual CAD meshes."""
 import json
 import numpy as np
 import matplotlib
@@ -105,20 +105,59 @@ ax.text(B.PCB_X1+9,B.FACE_Z,'孔距 27 mm',rotation=90,ha='center',va='center',c
 ax.text(0,B.FACE_Z-18,'方窗 27.2 mm · 遮住玻璃边缘',ha='center',color='#dce4ee',fontsize=11)
 ax.set_xlim(-33,38);ax.set_ylim(20,74);ax.set_aspect('equal');ax.axis('off')
 ax.set_title('④ 屏幕定位 · 四孔固定，排针朝右',fontsize=14)
-fig.suptitle('AgentPet V5.2  |  方块造型 + 可拆后盖',fontsize=23,y=.965)
+fig.suptitle('AgentPet V5.3  |  方块造型 + 可拆后盖',fontsize=23,y=.965)
 fig.text(.5,.032,'商品尺寸图驱动 · 连接器为预留包络 · 先打印小型屏幕试装片核对实物',ha='center',color='#aab8c9',fontsize=12)
 plt.subplots_adjust(left=.03,right=.96,top=.90,bottom=.08,wspace=.04,hspace=.16)
 fig.savefig(B.OUT/'assembly_steps.png')
 fig.savefig(B.OUT/'case_preview4.png')
 plt.close(fig)
+
+# Compare locator outlines at the corner identified by the print shop.
+# Reconstruct only the previous circular-cut lip for the comparison image.
+from matplotlib.collections import PolyCollection
+lw,lh=2*(B.INNER_X-B.CLEARANCE),B.CEILING-B.FLOOR-2*B.CLEARANCE
+old_lip=B.subtract(B.box(lw,B.LIP_D+.02,lh,y=B.REAR+B.LIP_D/2-.01,
+                         z=B.FLOOR+B.CLEARANCE),
+    [B.box(lw-2*B.LIP_T,B.LIP_D+2,lh-2*B.LIP_T,y=B.REAR+1,
+           z=B.FLOOR+B.CLEARANCE+B.LIP_T)])
+old_lip=B.subtract(old_lip,[B.cylinder_y(x,B.REAR+1,z,4,4)
+                          for x in B.BACK_HOLES_X for z in B.BACK_HOLES_Z])
+fig,axes=plt.subplots(1,2,figsize=(11,6),dpi=160)
+for ax,lip,title in zip(axes,[old_lip,B.build_back_lip()],
+    ['V5.2 圆形避让 · 残留小凸块','V5.3 方形避让 · 平头定位边']):
+    ax.set_facecolor('#19232f')
+    ax.add_patch(Rectangle((-B.W/2,B.LEG_H),B.W,B.H-B.LEG_H,
+                           color='#465360'))
+    faces=lip.triangles[lip.face_normals[:,1]>.99]
+    ax.add_collection(PolyCollection(faces[:,:,[0,2]],facecolor='#f7a44c',
+                                     edgecolor='none'))
+    ax.add_patch(Circle((32.5,67.5),1.15,color='#141b24'))
+    ax.set_xlim(26.5,38.5);ax.set_ylim(61.5,74.5)
+    ax.set_aspect('equal');ax.set_title(title,fontsize=14,pad=15)
+    ax.set_xlabel('X / mm',color='#aab8c9');ax.set_ylabel('Z / mm',color='#aab8c9')
+    ax.tick_params(colors='#aab8c9')
+axes[0].annotate('1.61 × 0.95 mm',xy=(34.9,70.9),xytext=(28,73),
+                 color='#ffffff',fontsize=11,
+                 arrowprops=dict(arrowstyle='->',color='#ff7979'))
+axes[1].annotate('定位边宽 1.4 mm\n端部平直',xy=(28.5,70.6),xytext=(29.5,72.2),
+                 color='#ffffff',fontsize=11,
+                 arrowprops=dict(arrowstyle='->',color='#90dfbc'))
+axes[1].annotate('小凸块已移除',xy=(34.9,70.9),xytext=(30,63),
+                 color='#ffffff',fontsize=11,
+                 arrowprops=dict(arrowstyle='->',color='#90dfbc'))
+fig.suptitle('后盖定位边修正 · 局部放大',fontsize=19,y=.98)
+fig.text(.5,.025,'橙色：凸起定位边  |  灰色：后盖底板  |  四个螺丝孔及单边 0.30 mm 配合间隙不变',
+         ha='center',fontsize=10,color='#aab8c9')
+fig.subplots_adjust(left=.07,right=.96,bottom=.15,top=.86,wspace=.26)
+fig.savefig(B.OUT/'rear_lip_revision.png');plt.close(fig)
 fig=plt.figure(figsize=(9,8),dpi=160)
-render(fig.add_subplot(111),'AgentPet V5.2 · 方块桌宠')
+render(fig.add_subplot(111),'AgentPet V5.3 · 方块桌宠')
 plt.subplots_adjust(left=0,right=1,top=.94,bottom=0)
 fig.savefig(B.OUT/'case_preview.png')
 print('Saved assembly_preview.html, assembly_steps.png, case_preview.png, case_preview4.png')
 
 # Dimensioned section schematic: glass and header occupy different areas of
-# the PCB. Their heights are shown together here to explain the blind relief.
+# the PCB. Their heights are shown together here to explain the shared glass and pin clearance.
 fig,ax=plt.subplots(figsize=(10,6),dpi=160)
 ax.set_facecolor('#19232f')
 ax.add_patch(Rectangle((B.PCB_BACK,0),B.PCB_T,17,color='#24629b'))
@@ -140,7 +179,7 @@ ax.text(B.PCB_FRONT,1,'玻璃高 2.0 mm · PCB 厚 1.2 mm',fontsize=10)
 ax.text(B.FRONT-B.WALL/2,18,'前壁厚度\n2.4 mm',ha='center',fontsize=10)
 ax.set_xlim(B.PCB_BACK-1,B.FRONT+1);ax.set_ylim(-4,21)
 ax.set_aspect(.25);ax.axis('off')
-ax.set_title('V5.2 · 玻璃与短针脚间隙（局部剖面示意）',fontsize=17,pad=15)
+ax.set_title('V5.3 · 玻璃与短针脚间隙（局部剖面示意）',fontsize=17,pad=15)
 fig.text(.5,.035,'用户确认针脚低于玻璃面；按玻璃高度核对，共用已有 0.6 mm 间隙。',
          ha='center',color='#aab8c9',fontsize=10)
 fig.subplots_adjust(left=.06,right=.96,top=.86,bottom=.12)

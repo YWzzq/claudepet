@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V5.2 enclosure, millimetres: X=width, Y=front, Z=up.
+"""V5.3 enclosure, millimetres: X=width, Y=front, Z=up.
 Seller drawings are the source. Connector/lead dimensions remain assumptions.
 Run anywhere; outputs go beside this script. Screen installs BEFORE the board.
 """
@@ -118,15 +118,22 @@ def build_shell():
     return subtract(shell, pilots)
 
 
-def build_back():
-    plate = box(W, BACK_T, H - LEG_H, y=REAR - BACK_T / 2, z=LEG_H)
+def build_back_lip():
     lw, lh = 2 * (INNER_X - CLEARANCE), CEILING - FLOOR - 2 * CLEARANCE
     lip = subtract(box(lw, LIP_D + .02, lh, y=REAR + LIP_D / 2 - .01,
                        z=FLOOR + CLEARANCE),
                    [box(lw - 2 * LIP_T, LIP_D + 2, lh - 2 * LIP_T,
                         y=REAR + 1, z=FLOOR + CLEARANCE + LIP_T)])
-    lip = subtract(lip, [cylinder_y(x, REAR + 1, z, 4.0, 4)
-                        for x in BACK_HOLES_X for z in BACK_HOLES_Z])
+    # Square keepouts contain the previous R4 circular clearances. Circular
+    # cuts left two 1.61 x 0.95 mm corner islands and tapered strip ends.
+    # Cut through to the outside of the lip, leaving blunt 1.4 mm-wide ends.
+    return subtract(lip, [box(8, 4, 8, x, REAR + 1, z - 4)
+                          for x in BACK_HOLES_X for z in BACK_HOLES_Z])
+
+
+def build_back():
+    plate = box(W, BACK_T, H - LEG_H, y=REAR - BACK_T / 2, z=LEG_H)
+    lip = build_back_lip()
     return subtract(union([plate, lip]),
         [cylinder_y(x, REAR - .2, z, 1.15, 8)
          for x in BACK_HOLES_X for z in BACK_HOLES_Z] +
@@ -214,6 +221,12 @@ def verify(parts):
         check(f'{k}: closed connected solid', m.is_volume and len(m.split()) == 1,
               dict(watertight=bool(m.is_watertight), components=len(m.split()),
                    bounds_mm=m.bounds.round(3).tolist(), volume_mm3=round(m.volume, 3)))
+    lip_segments = build_back_lip().split()
+    lip_sizes = [m.extents[[0, 2]].round(4).tolist() for m in lip_segments]
+    check('rear lip has four blunt segments without tiny corner islands',
+          len(lip_segments) == 4 and min(min(s) for s in lip_sizes) >= LIP_T - 1e-4,
+          dict(segment_footprints_mm=lip_sizes, lip_width_mm=LIP_T,
+               post_keepout_mm=[8, 8], clearance_per_edge_mm=CLEARANCE))
     pitch = [SCREEN_HOLES_X[1] - SCREEN_HOLES_X[0], SCREEN_HOLES_Z[1] - SCREEN_HOLES_Z[0]]
     check('screen hole pitch matches drawing', np.allclose(pitch, [38.72, 27]), pitch)
     check('window stays inside active area', 0 < WINDOW < AA,
@@ -284,7 +297,7 @@ def verify(parts):
     gusset_run = (INNER_X+.5)-(abs(BACK_HOLES_X[0])-3.6)
     check('rear post print ramp is at most 45 degrees', gusset_run/(gusset_run+.2) <= 1,
           dict(lateral_extension_mm=round(gusset_run,3), print_height_mm=round(gusset_run+.2,3)))
-    report = dict(version='V5.2', units='mm', all_geometry_checks_pass=all(c['passed'] for c in checks),
+    report = dict(version='V5.3', units='mm', all_geometry_checks_pass=all(c['passed'] for c in checks),
         checks=checks, not_verified=[
         'Seller drawings vs actual hardware dimensions; measure before final print.',
         'Actual connector heights, wire bends, adhesive and USB cable plug sizes.',
@@ -334,6 +347,7 @@ def main():
     bp = print_orientation(parts['back'], False)
     fp.export(OUT / 'agentpet_case_front_print.stl')
     bp.export(OUT / 'agentpet_case_back_print.stl')
+    bp.export(OUT / 'agentpet_case_back_v5_3_print.stl')
     bp.apply_translation([fp.bounds[1, 0] + 12, 0, 0])
     trimesh.util.concatenate([fp, bp]).export(OUT / 'agentpet_case_both.stl')
     print_orientation(build_coupon(), True).export(OUT / 'screen_fit_coupon.stl')
@@ -349,7 +363,7 @@ def main():
     # glTF uses Y-up; preserve upright appearance in standard GLB viewers.
     scene.apply_transform(trimesh.transformations.rotation_matrix(-np.pi / 2, [1, 0, 0]))
     scene.export(OUT / 'agentpet_assembly.glb')
-    print('Saved validated V5.2 STL, print layouts, coupon and assembled GLB.')
+    print('Saved validated V5.3 STL, print layouts, coupon and assembled GLB.')
 
 
 if __name__ == '__main__':

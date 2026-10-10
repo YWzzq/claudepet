@@ -1,5 +1,5 @@
 {
-  "version": "V5.2",
+  "version": "V5.3",
   "all_saved_file_checks_pass": true,
   "checks": [
     {
@@ -127,6 +127,69 @@
       "evidence": {
         "min_z_mm": 0.0
       }
+    },
+    {
+      "check": "agentpet_case_back_v5_3_print.stl: valid saved mesh",
+      "passed": true,
+      "evidence": {
+        "watertight": true,
+        "components": 1,
+        "size_mm": [
+          76.0,
+          60.0,
+          4.4
+        ]
+      }
+    },
+    {
+      "check": "agentpet_case_back_v5_3_print.stl: on bed",
+      "passed": true,
+      "evidence": {
+        "min_z_mm": 0.0
+      }
+    },
+    {
+      "check": "saved rear lip: four segments, minimum footprint dimension 1.4 mm",
+      "passed": true,
+      "evidence": {
+        "segment_footprints_mm": [
+          [
+            70.6,
+            19.3
+          ],
+          [
+            1.4,
+            19.5
+          ],
+          [
+            57.0,
+            1.4
+          ],
+          [
+            1.4,
+            19.5
+          ]
+        ]
+      }
+    },
+    {
+      "check": "saved rear lip: corner island -1 removed",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "saved rear lip: corner island 1 removed",
+      "passed": true,
+      "evidence": {
+        "intersection_mm3": 0.0
+      }
+    },
+    {
+      "check": "versioned rear print STL matches current rear print STL",
+      "passed": true,
+      "evidence": {}
     },
     {
       "check": "saved enclosure pair has no overlap",
@@ -280,7 +343,7 @@
       "check": "build-time geometry audit passes",
       "passed": true,
       "evidence": {
-        "check_count": 67
+        "check_count": 68
       }
     }
   ],

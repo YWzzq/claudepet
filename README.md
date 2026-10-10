@@ -4,23 +4,23 @@
 ESP32-S3，通过 1.54" ST7789（240×240）表情屏幕和板载 RGB 灯显示当前状态。
 
 支持状态配方管理、屏幕表情预览、自定义事件绑定和多会话优先级仲裁。
-当前外壳为 **V5.2 像素方块版**，已完成软件几何检查，准备进行首轮打印试装。
+当前外壳为 **V5.3 像素方块版**，已完成软件几何检查，准备进行首轮打印试装。
 
 ## 当前外观与装配
 
 下图是按硬件尺寸图生成的 CAD 模型预览。屏幕显示区构成桌宠的脸，开发板放在底层，双 USB 从右侧接线，后盖可拆卸。
 
-![AgentPet V5.2 外壳模型预览](models/case_preview.png)
+![AgentPet V5.3 外壳模型预览](models/case_preview.png)
 
-![AgentPet V5.2 外观、内部布局、零件展开与屏幕孔位](models/assembly_steps.png)
+![AgentPet V5.3 外观、内部布局、零件展开与屏幕孔位](models/assembly_steps.png)
 
 ![交互式装配预览页面（V5.1 界面示意）](models/preview_interactive.png)
 
 - [按屏幕与开发板尺寸图生成的硬件试拼预览](models/hardware_fit_preview.html)：单独看硬件，分步装屏幕、放主控、合后盖。
 - [硬件模型与试拼概览图](models/hardware_fit_overview.png)
 - [外壳与装配说明](models/README.md)
-- [打印店专用包 V5.2](models/agentpet_print_shop_v5_2.zip)：两块试装片、前后壳、打印说明和装配图。
-- [完整模型与源文件包 V5.2](models/agentpet_case_v5_2.zip)
+- [打印店专用包 V5.3](models/agentpet_print_shop_v5_3.zip)：两块试装片、前后壳、打印说明和装配图。
+- [完整模型与源文件包 V5.3](models/agentpet_case_v5_3.zip)
 - [完整装配 GLB](models/agentpet_assembly.glb)：一个文件查看全部零件。
 
 下载仓库后，直接用浏览器打开 `models/assembly_preview.html`，可旋转、隐藏外壳、展开零件。
@@ -61,7 +61,7 @@ agentpet/
 │   └── install_hooks.py     # 一键安装器（自动备份、幂等）
 ├── tools/
 │   └── virtual_device.py    # 虚拟 ESP32：终端表情脸，不插板子跑通全链路
-├── models/              # V5.2 外壳、STL/GLB、装配预览、检查报告和打印包
+├── models/              # V5.3 外壳、STL/GLB、装配预览、检查报告和打印包
 │   ├── build_case.py          # 尺寸与结构的唯一来源
 │   ├── render_assembly.py     # 装配图与交互预览生成器
 │   ├── final_print_audit.py   # 独立检查导出的 STL / GLB
@@ -233,11 +233,14 @@ bridge 跑起来后，浏览器打开 **http://localhost:18787/ui**：
 避开：GPIO48（板载 RGB）、GPIO0（BOOT）、GPIO19/20（USB）、GPIO43/44（串口）、
 GPIO35/36/37（N16R8 Octal PSRAM 占用）。
 
-## 3D 打印外壳（V5.2）
+## 3D 打印外壳（V5.3）
 
 已按屏幕与 ESP32-S3 商品尺寸图重建像素方块外壳，包含屏幕四孔固定、主控胶垫区域、双 USB 共用出口和可拆后盖。
 主控向 USB 一侧移近 3.5 mm，USB 共用开口为 **32.34 × 12 mm**，接口后缩约 **2.8 mm**；后盖螺柱加入斜撑。
-V5.2 按侧视图采用 3.2 mm 屏幕厚度。用户确认玻璃面短针脚低于玻璃，直接共用已有 0.6 mm 间隙；前壁厚 2.4 mm。屏幕试装片同步更新。
+沿用 V5.2 的屏幕安装：按侧视图采用 3.2 mm 屏幕厚度。用户确认玻璃面短针脚低于玻璃，直接共用已有 0.6 mm 间隙；前壁厚 2.4 mm。屏幕试装片沿用已检查的几何。
+V5.3 将后盖螺柱旁的定位边改为平头分段，移除打印店指出的约 1.61 × 0.95 mm 小凸块；前壳、孔位及配合间隙不变。
+
+![后盖定位边修正](models/rear_lip_revision.png)
 
 | 项目 | 当前设计 |
 |---|---|
@@ -247,12 +250,12 @@ V5.2 按侧视图采用 3.2 mm 屏幕厚度。用户确认玻璃面短针脚低�
 | 屏幕窗口 | 27.2 × 27.2 mm，遮住玻璃边缘 |
 | 后盖定位边间隙 | 单边 0.30 mm |
 | 屏幕 / 后盖螺丝 | Ø2 × 5 mm / Ø2 × 6 mm，自攻，各 4 颗 |
-| 软件检查 | 67 项模型检查 + 33 项导出文件检查通过 |
+| 软件检查 | 68 项模型检查 + 39 项导出文件检查通过 |
 
 打印文件按顺序使用：
 
 1. [屏幕试装片](models/screen_fit_coupon.stl)与 [USB 开口试装片](models/usb_fit_coupon.stl)：先验证实物。
-2. [前壳打印文件](models/agentpet_case_front_print.stl)与 [后盖打印文件](models/agentpet_case_back_print.stl)：试装确认后，各打印一件。文件已摆位。
+2. [前壳打印文件](models/agentpet_case_front_print.stl)与 [V5.3 后盖打印文件](models/agentpet_case_back_v5_3_print.stl)：试装确认后，各打印一件。文件已摆位。
 
 首轮建议橙色 PLA / FDM、0.2 mm 层高、3 道壁、100% 比例。
 打印店需要检查切片预览并按需加局部支撑；不能仅凭 STL 闭合就判断免支撑。
@@ -280,7 +283,7 @@ python3 -m venv /tmp/agentpet-cad
 - [x] V0.5 Python Bridge：归一化 + session 优先级仲裁 + 心跳 + mDNS 解析（16 测试通过，事件驱动即时推送）
 - [x] V0.6 Claude Code hooks：7 事件转发 + 一键安装器（沙箱安装 + 端到端验证通过）
 - [x] V0.7 Codex hooks：事件归一化 + 安装器（Codex 配置格式随版本演进，不生效时按官方文档微调 `hooks/install_hooks.py`）
-- [x] V0.8 外壳 V5.2：模型、装配预览、试装片、前后壳、打印包与软件检查
+- [x] V0.8 外壳 V5.3：模型、装配预览、试装片、前后壳、打印包与软件检查
 - [ ] V0.8 外壳实物打印与试装
 - [ ] 后续动画打磨、可选电池版
 - [x] V1.0 状态配方系统：配方 NVS 持久化 + GET/PUT/DELETE /states API + bridge 规则引擎（mapping.json 热加载）
