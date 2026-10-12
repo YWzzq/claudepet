@@ -2,7 +2,7 @@
 
 import unittest
 
-from agentpet_bridge import DEFAULT_PRIORITY, SessionTable, normalize
+from agentpet_bridge import DEFAULT_PRIORITY, FALLBACK_RULES, SessionTable, normalize
 
 
 class FakeClock:
@@ -84,6 +84,17 @@ class TestNormalize(unittest.TestCase):
         out = norm_of({"hook_event_name": "PostToolUse", "tool_name": "Bash",
                        "tool_response": {"isError": True}})
         self.assertEqual(out["state"], "error")
+
+    def test_native_permission_and_failure_hooks(self):
+        # Modern Claude sends dedicated events, not just Notification or an
+        # isError flag inside a successful PostToolUse payload.
+        for rules in (None, FALLBACK_RULES):
+            for event, expected in (("PermissionRequest", "waiting"),
+                                    ("PostToolUseFailure", "error")):
+                out = normalize({"source": "claude", "hook_event_name": event,
+                                 "tool_name": "Bash", "session_id": "native"}, rules)
+                self.assertEqual(out["state"], expected)
+                self.assertEqual(out["session_id"], "native")
 
     def test_codex_events(self):
         self.assertEqual(

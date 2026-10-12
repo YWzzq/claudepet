@@ -66,6 +66,8 @@ FALLBACK_RULES = [
     {"source": "claude", "event": "PreToolUse", "tool": "Write", "state": "writing"},
     {"source": "claude", "event": "PreToolUse", "tool": "Bash*", "state": "shell"},
     {"source": "claude", "event": "PreToolUse", "state": "thinking"},
+    {"source": "claude", "event": "PermissionRequest", "state": "waiting"},
+    {"source": "claude", "event": "PostToolUseFailure", "state": "error"},
     {"source": "claude", "event": "PostToolUse", "on_error": True, "state": "error"},
     {"source": "claude", "event": "Notification", "state": "waiting", "label_from": "message"},
     {"source": "claude", "event": "Stop", "state": "done"},

@@ -10,7 +10,7 @@
   python3 /path/to/agentpet_hook.py claude
   python3 /path/to/agentpet_hook.py codex
 
-环境变量：AGENTPET_BRIDGE 默认 http://127.0.0.1:8787/hook
+环境变量：AGENTPET_BRIDGE 默认 http://127.0.0.1:18787/hook
 """
 
 import json
@@ -18,6 +18,7 @@ import os
 import sys
 import time
 import urllib.request
+import urllib.parse
 
 SOURCE = sys.argv[1] if len(sys.argv) > 1 else "claude"
 BRIDGE = os.environ.get("AGENTPET_BRIDGE", "http://127.0.0.1:18787/hook")
@@ -47,7 +48,11 @@ def main():
         event = {}
     if not isinstance(event, dict):
         return
-    event.setdefault("source", SOURCE)
+    # Claude SessionStart also uses `source` for startup/resume/clear. Keep
+    # that metadata separately; bridge rules need the originating agent here.
+    if "source" in event and event["source"] != SOURCE:
+        event["hook_source"] = event["source"]
+    event["source"] = SOURCE
 
     # Codex 事件采样：记录原始事件类型，用于发现新版本可用的事件
     if SOURCE == "codex":
@@ -62,7 +67,12 @@ def main():
         req = urllib.request.Request(
             BRIDGE, data=json.dumps(event, ensure_ascii=False).encode("utf-8"),
             headers={"Content-Type": "application/json"}, method="POST")
-        urllib.request.urlopen(req, timeout=0.5).read(64)
+        # CLI proxy settings must not route the local bridge through a proxy.
+        if urllib.parse.urlparse(BRIDGE).hostname in ("127.0.0.1", "localhost", "::1"):
+            opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+            opener.open(req, timeout=0.5).read(64)
+        else:
+            urllib.request.urlopen(req, timeout=0.5).read(64)
     except Exception:
         save_missed(event)  # bridge 不在线，落盘后照常成功退出
 

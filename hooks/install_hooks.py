@@ -30,8 +30,8 @@ CLAUDE_SETTINGS = os.path.expanduser("~/.claude/settings.json")
 CODEX_CONFIG = os.path.expanduser("~/.codex/hooks.json")
 
 # AgentPet 关心的 Claude Code 事件 → 都转发给同一个脚本
-CLAUDE_EVENTS = ["SessionStart", "UserPromptSubmit", "PreToolUse", "PostToolUse",
-                 "Notification", "Stop", "SessionEnd"]
+CLAUDE_EVENTS = ["SessionStart", "UserPromptSubmit", "PreToolUse", "PermissionRequest",
+                 "PostToolUse", "PostToolUseFailure", "Notification", "Stop", "SessionEnd"]
 
 
 def backup(path):

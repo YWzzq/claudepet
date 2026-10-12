@@ -93,7 +93,7 @@ pio device monitor           # 看日志
 
 ```bash
 cd bridge
-python3 test_bridge.py            # 16 个单元测试
+python3 test_bridge.py            # 20 个单元测试
 python3 agentpet_bridge.py --demo # 演示：双会话 + 优先级抢占 + done 过期（约 16s）
 python3 agentpet_bridge.py        # 正常运行，推送 http://agentpet.local
 python3 agentpet_bridge.py --host 192.168.1.23   # 或手动指定设备 IP
@@ -119,11 +119,20 @@ python3 hooks/install_hooks.py --claude    # 只装 Claude Code
 ```
 
 - 安装器自动备份原配置（`.bak-时间戳`），只增不删、重复运行幂等
+- Claude 注册 9 类事件，包括 `PermissionRequest`（等待授权）和 `PostToolUseFailure`（工具失败）。
+- `SessionStart` 自带的 `source=startup/resume/...` 会保存在 `hook_source`，转发的 `source` 固定为 `claude`，避免规则匹配失败。
+- 发往本机 bridge 的请求会绕过 CLI 继承的代理设置。
 - hook 脚本 0.5s 超时 fire-and-forget，bridge 不在线时事件落盘
   `~/.agentpet/missed-hooks.jsonl`，绝不拖慢 CLI
 - 端口冲突时：bridge `--port XXXX`，并设环境变量
   `AGENTPET_BRIDGE=http://127.0.0.1:XXXX/hook`
 - 验证：开着 `bridge --dry-run`，正常使用 Claude Code，就能看到真实状态流
+
+### Claude 操作没有触发表情时
+
+先查看 `http://127.0.0.1:18787/health`：`sessions=0` 表示当前没有活跃事件，`push_ok` / `push_fail` 用于检查设备推送。若板子手动切换正常，但 Claude 操作没有事件，运行 `python3 hooks/install_hooks.py --claude` 恢复注册，然后在 Claude 的 `/hooks` 菜单确认 AgentPet 条目。已开启的旧会话若未载入变更，重开该 Claude 会话再试。
+
+默认自动绑定的是工作状态（思考、读取、编辑、命令、等待、完成、异常、待机）；爱心、吐舌等展示表情可在配置台手动预览或通过“事件绑定”自行指定。转发入口测试：`python3 hooks/test_agentpet_hook.py`。
 
 ### 5. 用 curl 直接驱动固件（V0.4 验收，不经过 bridge）
 
@@ -288,7 +297,7 @@ python3 -m venv /tmp/agentpet-cad
 - [x] V0.2 浏览器 240×240 表情模拟器（8 状态黑底彩五官，动画可调）
 - [x] V0.3 ST7789 显示驱动与真屏配置（`AGENTPET_HAS_DISPLAY=1`；当前旋转配置为 3，相对原配置顺时针 90°）
 - [x] V0.4 固件矢量表情：与模拟器同一套参数移植为 Adafruit GFX（编译通过，真机观感待验证）
-- [x] V0.5 Python Bridge：归一化 + session 优先级仲裁 + 心跳 + mDNS 解析（16 测试通过，事件驱动即时推送）
+- [x] V0.5 Python Bridge：归一化 + session 优先级仲裁 + 心跳 + mDNS 解析（20 测试通过，事件驱动即时推送）
 - [x] V0.6 Claude Code hooks：7 事件转发 + 一键安装器（沙箱安装 + 端到端验证通过）
 - [x] V0.7 Codex hooks：事件归一化 + 安装器（Codex 配置格式随版本演进，不生效时按官方文档微调 `hooks/install_hooks.py`）
 - [x] V0.8 外壳 V5.3：模型、装配预览、试装片、前后壳、打印包与软件检查
