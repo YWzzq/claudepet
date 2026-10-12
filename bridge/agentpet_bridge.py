@@ -23,6 +23,7 @@ import argparse
 import fnmatch
 import json
 import os
+import re
 import socket
 import sys
 import threading
@@ -333,7 +334,43 @@ def make_server(bridge, port):
     here = os.path.dirname(os.path.abspath(__file__))
 
     class Handler(BaseHTTPRequestHandler):
+        def proxy_board(self):
+            # Only the configured device and its recipe API are reachable.
+            if not re.fullmatch(r'/board/api/v1/(?:health|state|states(?:/[A-Za-z0-9_]{1,12})?)', self.path):
+                self.send_error(404); return
+            origin = self.headers.get('Origin')
+            port = self.server.server_port
+            if origin and origin not in (f'http://127.0.0.1:{port}', f'http://localhost:{port}'):
+                self.send_error(403); return
+            if not bridge.device_host:
+                self.send_error(503, 'Device address unavailable'); return
+            try:
+                length = int(self.headers.get('Content-Length') or 0)
+            except ValueError:
+                self.send_error(400); return
+            if length < 0:
+                self.send_error(400); return
+            if length > 65536:
+                self.send_error(413); return
+            body = self.rfile.read(length) if length else None
+            req = urllib.request.Request('http://'+bridge.device_host+self.path[len('/board'):],
+                data=body, headers={'Content-Type':'application/json'}, method=self.command)
+            opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+            try:
+                with opener.open(req, timeout=4) as response:
+                    status, data = response.status, response.read()
+            except urllib.error.HTTPError as error:
+                status, data = error.code, error.read()
+            except OSError:
+                status, data = 502, b'{"error":"device unavailable"}'
+            self.send_response(status)
+            self.send_header('Content-Type','application/json; charset=utf-8')
+            self.send_header('Content-Length',str(len(data)))
+            self.end_headers(); self.wfile.write(data)
+
         def do_POST(self):
+            if self.path.startswith('/board/'):
+                return self.proxy_board()
             if self.path == "/hook":
                 length = int(self.headers.get("Content-Length") or 0)
                 raw = self.rfile.read(length) if length else b""
@@ -345,6 +382,8 @@ def make_server(bridge, port):
             self.end_headers()
 
         def do_GET(self):
+            if self.path.startswith('/board/'):
+                return self.proxy_board()
             if self.path in ("/", "/ui"):
                 # 配置台页面：每次现读文件，改完刷新即生效
                 try:
@@ -387,6 +426,8 @@ def make_server(bridge, port):
                 self.end_headers()
 
         def do_PUT(self):
+            if self.path.startswith('/board/'):
+                return self.proxy_board()
             if self.path == "/api/v1/mapping":
                 length = int(self.headers.get("Content-Length") or 0)
                 raw = self.rfile.read(length) if length else b""
@@ -406,6 +447,11 @@ def make_server(bridge, port):
                     self.send_response(500); self.end_headers()
             else:
                 self.send_response(404); self.end_headers()
+
+        def do_DELETE(self):
+            if self.path.startswith('/board/'):
+                return self.proxy_board()
+            self.send_error(404)
 
         def log_message(self, *args):
             pass  # 静默访问日志，hooks 高频调用不刷屏

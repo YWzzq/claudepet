@@ -53,7 +53,14 @@ void setState(const String& name, const String& source, const String& label, con
   displaySetStateByName(name, label, sr.raw);
 }
 
+void addCorsHeaders() {
+  server.sendHeader("Access-Control-Allow-Origin", "*");
+  server.sendHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  server.sendHeader("Access-Control-Allow-Headers", "Content-Type");
+}
+
 void handleState() {
+  addCorsHeaders();
   if (!server.hasArg("plain")) {
     server.send(400, "application/json", "{\"error\":\"missing body\"}");
     return;
@@ -80,12 +87,14 @@ void handleState() {
 }
 
 void handleStatesList() {
+  addCorsHeaders();
   server.send(200, "application/json", gRecipes.listJson());
 }
 
 // /api/v1/states/<name> 的 GET / PUT / DELETE
 void handleStateItem() {
-  // 浏览器跨域预检：任何路径的 OPTIONS 都直接放行（CORS 头由 enableCORS 附加）
+  addCorsHeaders();
+  // Explicit method/header lists also work in embedded browser preflights.
   if (server.method() == HTTP_OPTIONS) {
     server.send(200, "application/json", "{}");
     return;
@@ -136,6 +145,7 @@ void handleStateItem() {
 }
 
 void handleHealth() {
+  addCorsHeaders();
   JsonDocument doc;
   doc["device"] = DEVICE_NAME;
   doc["state"] = gStateName;
@@ -188,12 +198,13 @@ void setup() {
   server.on("/api/v1/states", HTTP_GET, handleStatesList);
   server.on("/api/v1/health", HTTP_GET, handleHealth);
   server.on("/", HTTP_GET, []() {
+    addCorsHeaders();
     server.send(200, "text/plain",
                 "AgentPet V1.0 - POST /api/v1/state, GET/PUT/DELETE /api/v1/states/<name>, GET /api/v1/health");
   });
   // 动态路径 /api/v1/states/<name> 与兜底 404
   server.onNotFound(handleStateItem);
-  server.enableCORS(true);  // 允许网页配置台跨域直连板子
+  // CORS is added by handlers; avoid duplicate wildcard method/header lists.
   server.begin();
 
   setState("idle", "", "", "");

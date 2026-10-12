@@ -184,13 +184,13 @@ wokwi-cli                           # 命令行方式（需先安装 CLI、配�
 | state | 含义 | 表情（黑底 = 屏幕不显示，亮起的只有彩色五官） |
 |---|---|---|
 | idle | 空闲待机 | Claude 风格：灰蓝竖条眼、轻眨、无嘴与附加符号 |
-| thinking | 思考 | 紫：眼神飘 + 平嘴 + "..." |
-| reading | 读取代码 | 蓝：眼睛左右扫 |
-| writing | 编辑/写代码 | 绿：眼睛向下 + o 嘴 |
-| shell | 执行命令 | 青：嘴 = `> _` 提示符闪烁 |
-| waiting | 等待确认/授权 | 琥珀：瞪大眼 + 嘴 = 大问号 |
-| done | 任务完成 | 翠绿：笑眼 ∩ + 大笑嘴（5s 后自动回 idle） |
-| error | 异常/失败 | 红：X 眼 + 波浪嘴 + 轻微抖动 |
+| thinking | 思考 | 柔紫：一高一低的像素眼，轻轻望向一侧 |
+| reading | 读取代码 | 柔蓝：竖条眼左右扫视 |
+| writing | 编辑/写代码 | 浅绿：低垂方眼，向下专注 |
+| shell | 执行命令 | 浅青：竖条眼与小型像素 `>_` 符号 |
+| waiting | 等待确认/授权 | 暖琥珀：大方眼与小型像素问号 |
+| done | 任务完成 | 柔绿：方形笑眼轻跳（5s 后自动回 idle） |
+| error | 异常/失败 | 柔红：像素 X 眼，无波浪嘴和抖动 |
 
 `GET /api/v1/health` 返回：state / state_for_s / source / label / session_id /
 uptime_s / wifi / rssi / heap / ip。
@@ -199,11 +199,24 @@ uptime_s / wifi / rssi / heap / ip。
 
 ## 状态配方系统（V1.0）
 
-待机默认采用参考图中的极简竖条眼：黑底、灰蓝色（`#8C9BAB`）、两条 20 × 70 px 的矩形眼睛，中心间距 116 px，约每 3.6 秒轻眨一次。固件、配置台与模拟器使用相同形状；新增的 `screen.eye="bar"` 也能用于其他自定义状态。
+当前使用 **Claude 像素系列 · 17 款**，为白色像素壳子设计：统一黑底、方形眼睛、低幅度动画和柔和配色。待机保持 20 × 70 px 的竖条眼，其他表情通过高低、视线、方形笑眼、像素 X、爱心与小符号区分。
 
-打开配置台 `http://127.0.0.1:18787/ui`，输入板子当前 IP 并连接，选择 **idle → 应用 Claude 风格待机 → 保存完整配方到板子 → 预览到板子**。颜色、眼神、嘴和附加效果仍可单独调整，保存至 NVS 后断电保留。配置台载入部分 `screen` 配方时，会逐字段合并默认值，与固件一致。
+![白壳与 17 款像素表情](docs/claude_pixel_collection.jpg)
 
-![Claude 风格待机配置台](docs/claude_idle_platform.jpg)
+打开配置台 `http://127.0.0.1:18787/ui`，在白壳图集中点一款，加载到编辑区，调整颜色或眼神后点击 **保存完整配方到板子 → 预览到板子**。**整套保存到板子** 只更新已有状态的屏幕配方，保留各状态的 LED 设置与事件绑定；保存至 NVS 后断电保留。爱心、喝茶等仍可手动预览，工作状态沿用 Claude hooks。
+
+设计源在 `expressions/claude_pixel.json`，生成器同时产出固件图案和浏览器图案，避免效果分叉：
+
+```sh
+python3 tools/build_claude_faces.py
+python3 tools/test_claude_faces.py  # 17 款 × 5 个时刻，85 帧逐像素比较
+python3 -m unittest discover -s bridge -p 'test*.py'
+pio run -e esp32s3 -d firmware
+```
+
+屏幕配方使用 `eye: "pixel"` 与 `pose: "thinking"` 等造型名；旧版 `bar` 与圆眼等选项仍可单独配置。批量应用前的实物配方已备份到本机 `~/.agentpet/backups/`。
+
+配置台访问桥接服务当前连接的板子时，通过本机 `/board/api/v1/...` 转发读写，避免嵌入式浏览器跨域请求失败。桥接服务仍只监听 `127.0.0.1`，转发目标限定为启动时配置的设备。
 
 板子内置"配方库"（NVS 持久化，断电不丢），出厂预置 8 个状态，支持动态增删改：
 

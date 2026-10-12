@@ -8,6 +8,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7789.h>
 #include <ArduinoJson.h>
+#include "claude_faces.generated.h"
 
 #define RGB565(r, g, b) ((uint16_t)((((r) >> 3) << 11) | (((g) >> 2) << 5) | ((b) >> 3)))
 
@@ -27,6 +28,7 @@ static const int W = 240, H = 240;
 struct ScreenParams {
   uint16_t bg = C_BLACK, fg = C_WHITE;
   String eye = "open";    // bar open wide sleep happy x heart spiral angry
+  String pose = "idle";  // Claude pixel expression, separate from eye style
   String anim = "still";  // still look scan down
   String mouth = "flat";  // none flat smile o wave frown prompt question tongue
   String extra = "none";  // none dots z tears hearts blush glasses
@@ -172,6 +174,13 @@ static const size_t N_DEFAULT_SCREEN = sizeof(DEFAULT_SCREEN) / sizeof(DEFAULT_S
 
 static void applyDefaultScreen(const String& name) {
   gSp = ScreenParams();
+  for (const auto& p : CLAUDE_SCREENS) {
+    if (name == p.name) {
+      gSp.fg = hexRgb565(p.fg); gSp.eye = "pixel"; gSp.pose = name;
+      gSp.anim = p.anim; gSp.mouth = "none"; gSp.extra = p.extra;
+      return;
+    }
+  }
   for (size_t i = 0; i < N_DEFAULT_SCREEN; i++) {
     if (name == DEFAULT_SCREEN[i].name) {
       gSp.fg = hexRgb565(DEFAULT_SCREEN[i].fg);
@@ -198,6 +207,7 @@ void displaySetStateByName(const String& name, const String& label, const String
         if (s["bg"].is<const char*>()) gSp.bg = hexRgb565(s["bg"] | "#000000");
         if (s["fg"].is<const char*>()) gSp.fg = hexRgb565(s["fg"] | "#FFFFFF");
         if (s["eye"].is<const char*>()) gSp.eye = String(s["eye"] | "open");
+        if (s["pose"].is<const char*>()) gSp.pose = String(s["pose"] | "idle");
         if (s["anim"].is<const char*>()) gSp.anim = String(s["anim"] | "still");
         if (s["mouth"].is<const char*>()) gSp.mouth = String(s["mouth"] | "flat");
         if (s["extra"].is<const char*>()) gSp.extra = String(s["extra"] | "none");
@@ -218,13 +228,16 @@ void displayRender() {
   bool blink = fmodf(t + 1.3f, 3.6f) < 0.12f;
 
   uint16_t fg = gSp.fg;
-  const bool barEyes = gSp.eye == "bar";
+  const bool barEyes = gSp.eye == "bar" || gSp.eye == "pixel";
   int eyeDx = barEyes ? 58 : EYE_DX;
   int lx = 120 - eyeDx, rx = 120 + eyeDx;
   int ey = barEyes ? 120 : EYE_Y, my = MOUTH_Y;
 
   // ── 眼睛 ──
-  if (barEyes) {
+  if (gSp.eye == "pixel") {
+    drawClaudeEyes(c, gSp.pose, gSp.anim, fg, t);
+  }
+  else if (barEyes) {
     // Pixel bars match the enclosure preview: no highlights or round ends.
     int dx = 0, dy = 0;
     if (gSp.anim == "look") { dx = (int)(sinf(t * .7f) * 6 - 2); dy = -6; }
@@ -273,7 +286,10 @@ void displayRender() {
   }
 
   // ── 附加 ──
-  if (gSp.extra == "dots") {
+  if (gSp.extra.startsWith("pixel_")) {
+    drawClaudeAccent(c, gSp.extra, fg);
+  }
+  else if (gSp.extra == "dots") {
     for (int i = 0; i < 3; i++) {
       bool on = sinf(t * 2.4f - i * 0.7f) > -0.2f;
       c.fillCircle(178 + i * 14, 40, 4, on ? fg : dim(fg));
