@@ -33,7 +33,8 @@
 #define LCD_INVERT 1
 #endif
 
-// 屏幕旋转方向 0~3，按摆件安装方向调整
+// 屏幕旋转方向 0~3；当前安装相对原来的 2 顺时针转 90°，使用 3。
+// 在 LCD 驱动层统一旋转，表情、文字和提示均随整帧转向。
 #ifndef LCD_ROTATION
-#define LCD_ROTATION 2
+#define LCD_ROTATION 3
 #endif

@@ -87,6 +87,8 @@ pio run -t upload            # 烧录（CH343P 串口，可能需要 -u 指定�
 pio device monitor           # 看日志
 ```
 
+实物外壳中的屏幕默认使用 `LCD_ROTATION=3`，相对原来的 `2` 顺时针旋转 90°；表情、文字和提示整帧一起旋转。修改 `firmware/src/config.h` 后需要重新烧录才能生效。Wokwi 演示环境仍单独使用 `LCD_ROTATION=0`。
+
 ### 3. Python Bridge（V0.5）
 
 ```bash
@@ -278,7 +280,7 @@ python3 -m venv /tmp/agentpet-cad
 
 - [x] V0.1 固件骨架：Wi-Fi + mDNS + HTTP + 状态机（编译通过）
 - [x] V0.2 浏览器 240×240 表情模拟器（8 状态黑底彩五官，动画可调）
-- [x] V0.3 ST7789 显示驱动与真屏配置（`AGENTPET_HAS_DISPLAY=1`；当前旋转配置为 2）
+- [x] V0.3 ST7789 显示驱动与真屏配置（`AGENTPET_HAS_DISPLAY=1`；当前旋转配置为 3，相对原配置顺时针 90°）
 - [x] V0.4 固件矢量表情：与模拟器同一套参数移植为 Adafruit GFX（编译通过，真机观感待验证）
 - [x] V0.5 Python Bridge：归一化 + session 优先级仲裁 + 心跳 + mDNS 解析（16 测试通过，事件驱动即时推送）
 - [x] V0.6 Claude Code hooks：7 事件转发 + 一键安装器（沙箱安装 + 端到端验证通过）
