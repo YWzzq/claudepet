@@ -26,7 +26,7 @@ static const int W = 240, H = 240;
 // ── 屏幕配方参数 ──
 struct ScreenParams {
   uint16_t bg = C_BLACK, fg = C_WHITE;
-  String eye = "open";    // open wide sleep happy x heart spiral angry
+  String eye = "open";    // bar open wide sleep happy x heart spiral angry
   String anim = "still";  // still look scan down
   String mouth = "flat";  // none flat smile o wave frown prompt question tongue
   String extra = "none";  // none dots z tears hearts blush glasses
@@ -144,14 +144,14 @@ static void mouthTongue(int x, int y, uint16_t c) {
 struct DefaultScreen {
   const char* name;
   const char* fg;
-  const char* eye;    // open wide sleep happy x heart spiral angry
+  const char* eye;    // bar open wide sleep happy x heart spiral angry
   const char* anim;   // still look scan down
   const char* mouth;  // none flat smile o wave frown prompt question tongue
   const char* extra;  // none dots z tears hearts blush glasses
   bool shake;
 };
 static const DefaultScreen DEFAULT_SCREEN[] = {
-    {"idle",     "#8C9BAB", "sleep",  "still", "none",     "z",      false},
+    {"idle",     "#8C9BAB", "bar",    "still", "none",     "none",   false},
     {"thinking", "#9D8FFF", "open",   "look",  "flat",     "dots",   false},
     {"reading",  "#5AA2F0", "open",   "scan",  "flat",     "none",   false},
     {"writing",  "#4FCF84", "open",   "down",  "o",        "none",   false},
@@ -218,10 +218,23 @@ void displayRender() {
   bool blink = fmodf(t + 1.3f, 3.6f) < 0.12f;
 
   uint16_t fg = gSp.fg;
-  int lx = 120 - EYE_DX, rx = 120 + EYE_DX, ey = EYE_Y, my = MOUTH_Y;
+  const bool barEyes = gSp.eye == "bar";
+  int eyeDx = barEyes ? 58 : EYE_DX;
+  int lx = 120 - eyeDx, rx = 120 + eyeDx;
+  int ey = barEyes ? 120 : EYE_Y, my = MOUTH_Y;
 
   // ── 眼睛 ──
-  if (gSp.eye == "sleep") { eyeSleep(lx, ey, fg); eyeSleep(rx, ey, fg); }
+  if (barEyes) {
+    // Pixel bars match the enclosure preview: no highlights or round ends.
+    int dx = 0, dy = 0;
+    if (gSp.anim == "look") { dx = (int)(sinf(t * .7f) * 6 - 2); dy = -6; }
+    else if (gSp.anim == "scan") { dx = (int)(sinf(t * 2.4f) * 8); dy = 3; }
+    else if (gSp.anim == "down") { dy = 5; }
+    int height = blink ? 3 : 70;
+    c.fillRect(lx - 10 + dx, ey - height / 2 + dy, 20, height, fg);
+    c.fillRect(rx - 10 + dx, ey - height / 2 + dy, 20, height, fg);
+  }
+  else if (gSp.eye == "sleep") { eyeSleep(lx, ey, fg); eyeSleep(rx, ey, fg); }
   else if (gSp.eye == "happy") { eyeHappy(lx, ey, fg); eyeHappy(rx, ey, fg); }
   else if (gSp.eye == "x") { eyeX(lx, ey, fg); eyeX(rx, ey, fg); }
   else if (gSp.eye == "heart") { eyeHeart(lx, ey, fg); eyeHeart(rx, ey, fg); }

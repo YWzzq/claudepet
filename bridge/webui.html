@@ -119,12 +119,15 @@
       </div>
       <div>
         <h3>🖥 屏幕（240×240）</h3>
+        <button class="gray small" onclick="applyClaudeIdle()">应用 Claude 风格待机</button>
+        <p class="hint">黑底、灰蓝竖条眼、无嘴；竖条眼会轻轻眨眼。</p>
         <canvas id="screen" width="480" height="480"
                 style="width:100%;max-width:300px;border-radius:10px;border:1px solid #2A3040"></canvas>
         <div class="row"><label>背景</label><input type="color" id="s_bg" value="#000000"></div>
         <div class="row"><label>五官色</label><input type="color" id="s_fg" value="#8C9BAB"></div>
         <div class="row"><label>眼睛</label>
           <select id="s_eye">
+            <option value="bar">bar 竖条眼（Claude 风格）</option>
             <option value="open">open 圆眼</option>
             <option value="wide">wide 瞪大</option>
             <option value="sleep">sleep 闭眼</option>
@@ -137,7 +140,7 @@
         </div>
         <div class="row"><label>眼神</label>
           <select id="s_anim">
-            <option value="still">still 不动</option>
+            <option value="still">still 不移动</option>
             <option value="look">look 飘移</option>
             <option value="scan">scan 扫读</option>
             <option value="down">down 向下</option>
@@ -173,8 +176,8 @@
 
     <div class="btns">
       <button onclick="saveRecipe()">保存完整配方到板子</button>
-      <button class="green" onclick="testState()">试灯</button>
-      <button class="gray" onclick="toIdle()">回 idle</button>
+      <button class="green" onclick="testState()">预览到板子</button>
+      <button class="gray" onclick="toIdle()">回到待机</button>
       <button class="red" onclick="delState()">删除状态</button>
     </div>
     <div class="msg" id="msg1"></div>
@@ -251,7 +254,7 @@ async function connectBoard() {
   states = r.j.states;
   stateNames = Array.from(new Set(stateNames.concat(Object.keys(states))));
   renderChips();
-  select(Object.keys(states).sort()[0] || 'idle');
+  select(states.idle ? 'idle' : Object.keys(states).sort()[0] || 'idle');
   msg('msg1', '已连接 ' + boardIp + '，共 ' + Object.keys(states).length + ' 个状态', true);
 }
 
@@ -287,7 +290,7 @@ function renderChips() {
 }
 
 const SCREEN_DEFAULTS = {
-  idle:    { bg: '#000000', fg: '#646E7D', eye: 'sleep', anim: 'still', mouth: 'none',     extra: 'z',    shake: false },
+  idle:    { bg: '#000000', fg: '#8C9BAB', eye: 'bar',   anim: 'still', mouth: 'none',     extra: 'none', shake: false },
   thinking:{ bg: '#000000', fg: '#9D8FFF', eye: 'open',  anim: 'look',  mouth: 'flat',    extra: 'dots', shake: false },
   reading: { bg: '#000000', fg: '#5AA2F0', eye: 'open',  anim: 'scan',  mouth: 'flat',    extra: 'none', shake: false },
   writing: { bg: '#000000', fg: '#4FCF84', eye: 'open',  anim: 'down',  mouth: 'o',       extra: 'none', shake: false },
@@ -306,6 +309,15 @@ const SCREEN_DEFAULTS = {
 };
 const CUSTOM_DEFAULT = { bg: '#000000', fg: '#8C9BAB', eye: 'open', anim: 'still', mouth: 'flat', extra: 'none', shake: false };
 
+function applyClaudeIdle() {
+  const s = SCREEN_DEFAULTS.idle;
+  ['bg','fg','eye','anim','mouth','extra'].forEach(function (key) {
+    $('s_' + key).value = s[key];
+  });
+  $('s_shake').checked = false;
+  msg('msg1', '已应用 Claude 风格；保存配方后点击“预览到板子”即可显示。', true);
+}
+
 function select(name) {
   selected = name; isNew = false;
   const r = states[name] || {};
@@ -315,7 +327,7 @@ function select(name) {
   $('f_mode').value = (r.led && r.led.mode) || 'steady';
   $('f_period').value = (r.led && r.led.period) || 800;
   $('f_pv').textContent = $('f_period').value + 'ms';
-  const s = r.screen || SCREEN_DEFAULTS[name] || CUSTOM_DEFAULT;
+  const s = Object.assign({}, SCREEN_DEFAULTS[name] || CUSTOM_DEFAULT, r.screen || {});
   $('s_bg').value = s.bg || '#000000';
   $('s_fg').value = s.fg || '#8C9BAB';
   $('s_eye').value = s.eye || 'open';
@@ -378,7 +390,7 @@ async function delState() {
 
 async function testState() {
   const name = $('f_name').value.trim();
-  if (!states[name]) { msg('msg1', '该状态尚未保存，请先保存再试灯', false); return; }
+  if (!states[name]) { msg('msg1', '该状态尚未保存，请先保存再预览', false); return; }
   const r = await board('/api/v1/state', {
     method: 'POST', headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ state: name, source: 'ui' }),
@@ -557,7 +569,9 @@ function drawScreen(t) {
   sc2.textAlign = 'center';
   sc2.textBaseline = 'middle';
 
-  const lx = 120 - 38, rx = 120 + 38, ey = 96, my = 156;
+  const barEyes = p.eye === 'bar';
+  const eyeDx = barEyes ? 58 : 38;
+  const lx = 120 - eyeDx, rx = 120 + eyeDx, ey = barEyes ? 120 : 96, my = 156;
   const blink = ((t + 1.3) % 3.6) < 0.12;
 
   function eyeOpen(x, y, r) {
@@ -612,7 +626,17 @@ function drawScreen(t) {
     sc2.lineWidth = 8; sc2.stroke();
   }
 
-  if (p.eye === 'sleep') { eyeArc(lx, ey, false); eyeArc(rx, ey, false); }
+  if (barEyes) {
+    let dx = 0, dy = 0;
+    if (p.anim === 'look') { dx = Math.trunc(Math.sin(t * .7) * 6 - 2); dy = -6; }
+    else if (p.anim === 'scan') { dx = Math.trunc(Math.sin(t * 2.4) * 8); dy = 3; }
+    else if (p.anim === 'down') { dy = 5; }
+    const height = blink ? 3 : 70;
+    sc2.fillStyle = p.fg;
+    sc2.fillRect(lx - 10 + dx, ey - Math.floor(height / 2) + dy, 20, height);
+    sc2.fillRect(rx - 10 + dx, ey - Math.floor(height / 2) + dy, 20, height);
+  }
+  else if (p.eye === 'sleep') { eyeArc(lx, ey, false); eyeArc(rx, ey, false); }
   else if (p.eye === 'happy') { eyeArc(lx, ey, true); eyeArc(rx, ey, true); }
   else if (p.eye === 'x') { eyeX(lx, ey); eyeX(rx, ey); }
   else if (p.eye === 'heart') { eyeHeart(lx, ey); eyeHeart(rx, ey); }

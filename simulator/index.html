@@ -205,8 +205,12 @@ function draw(t) {
   const lx = 120 - EYE_DX, rx = 120 + EYE_DX;
   switch (current) {
     case 'idle':
-      eyeSleep(lx, EYE_Y);
-      eyeSleep(rx, EYE_Y);
+      ctx.fillStyle = INK;
+      {
+        const height = isBlinking(t) ? 3 : 70;
+        ctx.fillRect(52, 120 - Math.floor(height / 2), 20, height);
+        ctx.fillRect(168, 120 - Math.floor(height / 2), 20, height);
+      }
       break;
     case 'thinking': {
       const look = { x: Math.sin(t * 0.7) * 6 - 2, y: -6 };
@@ -249,7 +253,7 @@ function draw(t) {
 
   // ── 嘴 ──
   switch (current) {
-    case 'idle':     /* 睡觉没嘴 */ break;
+    case 'idle':     /* 极简待机没有嘴 */ break;
     case 'thinking': mouthFlat(); break;
     case 'reading':  mouthFlat(); break;
     case 'writing':  mouthO();    break;
@@ -267,15 +271,8 @@ function draw(t) {
     case 'error':    mouthWave(); break;
   }
 
-  // ── 极简提示（只有两个状态有）──
-  if (current === 'idle') {
-    // 一个飘着的 z
-    ctx.globalAlpha = 0.35 + 0.45 * Math.abs(Math.sin(t * 1.4));
-    ctx.fillStyle = INK;
-    ctx.font = 'bold 20px sans-serif';
-    ctx.fillText('z', 196, 44);
-    ctx.globalAlpha = 1;
-  } else if (current === 'thinking') {
+  // ── 思考提示 ──
+  if (current === 'thinking') {
     // 右上角 "...",依次点亮
     ctx.fillStyle = INK;
     for (let i = 0; i < 3; i++) {

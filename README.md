@@ -83,7 +83,7 @@ agentpet/
 pip install platformio
 cp firmware/src/secrets.h.example firmware/src/secrets.h   # 填入 Wi-Fi
 cd firmware
-pio run -t upload            # 烧录（CH343P 串口，可能需要 -u 指定端口）
+pio run -e esp32s3 -t upload # 烧录真机（CH343P 串口，必要时指定端口）
 pio device monitor           # 看日志
 ```
 
@@ -174,7 +174,7 @@ wokwi-cli                           # 命令行方式（需先安装 CLI、配�
 
 | state | 含义 | 表情（黑底 = 屏幕不显示，亮起的只有彩色五官） |
 |---|---|---|
-| idle | 空闲/睡觉 | 灰蓝：闭眼 ∪ + 飘 z |
+| idle | 空闲待机 | Claude 风格：灰蓝竖条眼、轻眨、无嘴与附加符号 |
 | thinking | 思考 | 紫：眼神飘 + 平嘴 + "..." |
 | reading | 读取代码 | 蓝：眼睛左右扫 |
 | writing | 编辑/写代码 | 绿：眼睛向下 + o 嘴 |
@@ -189,6 +189,12 @@ uptime_s / wifi / rssi / heap / ip。
 兜底规则：90 秒没有任何事件自动回 idle；done 停留 5 秒回 idle。
 
 ## 状态配方系统（V1.0）
+
+待机默认采用参考图中的极简竖条眼：黑底、灰蓝色（`#8C9BAB`）、两条 20 × 70 px 的矩形眼睛，中心间距 116 px，约每 3.6 秒轻眨一次。固件、配置台与模拟器使用相同形状；新增的 `screen.eye="bar"` 也能用于其他自定义状态。
+
+打开配置台 `http://127.0.0.1:18787/ui`，输入板子当前 IP 并连接，选择 **idle → 应用 Claude 风格待机 → 保存完整配方到板子 → 预览到板子**。颜色、眼神、嘴和附加效果仍可单独调整，保存至 NVS 后断电保留。配置台载入部分 `screen` 配方时，会逐字段合并默认值，与固件一致。
+
+![Claude 风格待机配置台](docs/claude_idle_platform.jpg)
 
 板子内置"配方库"（NVS 持久化，断电不丢），出厂预置 8 个状态，支持动态增删改：
 
